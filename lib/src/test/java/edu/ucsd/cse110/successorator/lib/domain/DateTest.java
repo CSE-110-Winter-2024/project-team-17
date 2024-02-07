@@ -22,6 +22,7 @@ public class DateTest {
         assertEquals("Sunday, 12/31",source.getDate());
 
         //testing correct date change at 2AM
+        calendar = Calendar.getInstance();
         calendar.set(Calendar.DATE ,1);
         calendar.set(Calendar.MONTH ,0);
         calendar.set(Calendar.HOUR, 14);
