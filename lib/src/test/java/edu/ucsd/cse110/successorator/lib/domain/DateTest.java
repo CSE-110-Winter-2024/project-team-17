@@ -19,14 +19,14 @@ public class DateTest {
         calendar.set(Calendar.MONTH ,0);
         calendar.set(Calendar.HOUR, 1);
         source.setDate(calendar);
-        assertEquals("Monday, 01/01",source.getDate());
+        assertEquals("Sunday, 12/31",source.getDate());
 
         //testing correct date change at 2AM
         calendar.set(Calendar.DATE ,1);
         calendar.set(Calendar.MONTH ,0);
         calendar.set(Calendar.HOUR, 14);
         source.setDate(calendar);
-        assertEquals("Tuesday, 01/02",source.getDate());
+        assertEquals("Monday, 01/01",source.getDate());
 
     }
 
