@@ -1,19 +1,15 @@
 package edu.ucsd.cse110.successorator.lib.domain;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 
 //import org.testng.annotations.Test;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 import org.junit.Test;
 
 import edu.ucsd.cse110.successorator.lib.data.DateInMemoryDataSource;
 
 public class DateTest {
-    private final Calendar calendar = Calendar.getInstance();
     @Test
     public void testTimeFormat(){
         //testing correct time display and at 12AM without update.
