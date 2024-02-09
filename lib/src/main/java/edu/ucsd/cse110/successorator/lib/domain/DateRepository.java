@@ -6,7 +6,7 @@ import edu.ucsd.cse110.successorator.lib.data.DateInMemoryDataSource;
 import edu.ucsd.cse110.successorator.lib.util.SimpleSubject;
 
 public class DateRepository {
-    private final Calendar calendar = null;
+    private Calendar calendar = Calendar.getInstance();
     private final DateInMemoryDataSource dateSource;
 
     public DateRepository(DateInMemoryDataSource dateSource) {
@@ -18,6 +18,7 @@ public class DateRepository {
     }
 
     public String getDate(){
+        calendar = Calendar.getInstance();
         dateSource.setDate(calendar);
         return dateSource.getDate();
     }

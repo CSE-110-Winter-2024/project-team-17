@@ -18,7 +18,7 @@ public class DateInMemoryDataSource {
         if (calendar.get(calendar.HOUR_OF_DAY) < 2) {
             calendar.add(calendar.DAY_OF_MONTH, -1);
         }
-        calendar.add(Calendar.DAY_OF_MONTH, +offset_days);
+        calendar.add(calendar.DAY_OF_MONTH, offset_days);
         dateFormat = new SimpleDateFormat("EEEE, MM/dd");
         formatted_date = dateFormat.format(calendar.getTime());
         date.setValue(formatted_date);
@@ -26,6 +26,7 @@ public class DateInMemoryDataSource {
 
     public void advanceDate(Calendar calendar){
         offset_days++;
+        setDate(calendar);
     }
 
     public String getDate(){
