@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import edu.ucsd.cse110.successorator.databinding.ActivityMainBinding;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
 import edu.ucsd.cse110.successorator.lib.domain.Tasks;
+import edu.ucsd.cse110.successorator.ui.tasklist.dialog.CreateTaskDialogFragment;
 
 public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding view;
@@ -44,14 +45,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //TEMPORARY JUST TO MAKE SURE THE APP RUNS
-                Task newTask = new Task(0, "New Task", 0);
-                Tasks.reorder(taskList, newTask);
+                showCreateTaskDialog();
             }
         });
-
-
     }
-
+    private void showCreateTaskDialog() {
+        CreateTaskDialogFragment dialogFragment = CreateTaskDialogFragment.newInstance();
+        dialogFragment.show(getSupportFragmentManager(), "CreateTaskDialogFragment");
+    }
 
 
     //Testing for
