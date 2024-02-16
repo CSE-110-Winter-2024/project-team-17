@@ -10,9 +10,12 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 
 import edu.ucsd.cse110.successorator.databinding.FragmentDialogCreateTaskBinding;
+import edu.ucsd.cse110.successorator.lib.domain.Task;
+import edu.ucsd.cse110.successorator.lib.domain.Tasks;
 
 public class CreateTaskDialogFragment extends DialogFragment {
     private FragmentDialogCreateTaskBinding view;
+    //private MainViewModel activityModel;
     CreateTaskDialogFragment() {
 
     }
@@ -22,6 +25,16 @@ public class CreateTaskDialogFragment extends DialogFragment {
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        var modelOwner = requireActivity();
+        //var modelFactory = ViewModelProvider.Factory.from(MainViewModel.initializer);
+        //var modelProvider = new ViewModelProvider(modelOwner, modelFactory);
+        //this.activityModel = modelProvider.get(MainViewModel.class);
     }
 
     @NonNull
@@ -39,6 +52,13 @@ public class CreateTaskDialogFragment extends DialogFragment {
     }
 
     private void onPositiveButtonClick(DialogInterface dialog, int which) {
+
+        var newTask = view.taskNameEditText.getText().toString();
+
+        var task = new Task(null, newTask, 0);
+
+        //Do something here to add task to tasklist
+
         dialog.dismiss();
     }
 
