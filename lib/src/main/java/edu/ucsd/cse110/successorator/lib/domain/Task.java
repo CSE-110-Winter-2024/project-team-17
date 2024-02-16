@@ -10,7 +10,7 @@ public class Task {
     private final @Nullable Integer id;
 
 
-    private @NonNull String name;
+    private final @NonNull String name;
     private boolean isFinished = false;
     private @NonNull int order;
 
@@ -22,7 +22,7 @@ public class Task {
     }
 
 
-    public @NonNull String nqme(){
+    public @NonNull String name(){
         return this.name;
     }
 
