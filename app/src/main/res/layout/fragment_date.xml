@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
     <TextView
         android:id="@+id/dateView"
         android:layout_width="300dp"
@@ -14,7 +13,7 @@
 
         android:layout_marginStart="5dp"
         android:gravity="center_vertical"
-        android:text="@string/placeholder"
+        android:text="Placeholder"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
