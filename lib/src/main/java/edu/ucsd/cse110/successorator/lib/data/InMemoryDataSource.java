@@ -22,22 +22,22 @@ public class InMemoryDataSource {
     private int maxSortOrder = Integer.MIN_VALUE;
 
     private final Map<Integer, Flashcard> flashcards
-        = new HashMap<>();
+            = new HashMap<>();
     private final Map<Integer, MutableSubject<Flashcard>> flashcardSubjects
-        = new HashMap<>();
+            = new HashMap<>();
     private final MutableSubject<List<Flashcard>> allFlashcardsSubject
-        = new SimpleSubject<>();
+            = new SimpleSubject<>();
 
     public InMemoryDataSource() {
     }
 
     public final static List<Flashcard> DEFAULT_CARDS = List.of(
-        new Flashcard(0, "SRP", "Single Responsibility Principle", 0),
-        new Flashcard(1, "OCP", "Open-Closed Principle", 1),
-        new Flashcard(2, "LSP", "Liskov Substitution Principle", 2),
-        new Flashcard(3, "ISP", "Interface Segregation Principle", 3),
-        new Flashcard(4, "DIP", "Dependency Inversion Principle", 4),
-        new Flashcard(5, "LKP", "Least Knowledge Principle (Law of Demeter)", 5)
+        /*new Flashcard(0, "Dishes", "Single Responsibility Principle", 0),
+        new Flashcard(1, "Dinner", "Open-Closed Principle", 1),
+        new Flashcard(2, "Laundry", "Liskov Substitution Principle", 2),
+        new Flashcard(3, "Study 140", "Interface Segregation Principle", 3),
+        new Flashcard(4, "Study 110", "Dependency Inversion Principle", 4),
+        new Flashcard(5, "Do Lab", "Least Knowledge Principle (Law of Demeter)", 5)*/
     );
 
     public static InMemoryDataSource fromDefault() {
@@ -90,8 +90,8 @@ public class InMemoryDataSource {
 
     public void putFlashcards(List<Flashcard> cards) {
         var fixedCards = cards.stream()
-            .map(this::preInsert)
-            .collect(Collectors.toList());
+                .map(this::preInsert)
+                .collect(Collectors.toList());
 
         fixedCards.forEach(card -> flashcards.put(card.id(), card));
         postInsert();
@@ -120,9 +120,9 @@ public class InMemoryDataSource {
 
     public void shiftSortOrders(int from, int to, int by) {
         var cards = flashcards.values().stream()
-            .filter(card -> card.sortOrder() >= from && card.sortOrder() <= to)
-            .map(card -> card.withSortOrder(card.sortOrder() + by))
-            .collect(Collectors.toList());
+                .filter(card -> card.sortOrder() >= from && card.sortOrder() <= to)
+                .map(card -> card.withSortOrder(card.sortOrder() + by))
+                .collect(Collectors.toList());
 
         putFlashcards(cards);
     }
@@ -153,14 +153,14 @@ public class InMemoryDataSource {
     private void postInsert() {
         // Keep the min and max sort orders up to date.
         minSortOrder = flashcards.values().stream()
-            .map(Flashcard::sortOrder)
-            .min(Integer::compareTo)
-            .orElse(Integer.MAX_VALUE);
+                .map(Flashcard::sortOrder)
+                .min(Integer::compareTo)
+                .orElse(Integer.MAX_VALUE);
 
         maxSortOrder = flashcards.values().stream()
-            .map(Flashcard::sortOrder)
-            .max(Integer::compareTo)
-            .orElse(Integer.MIN_VALUE);
+                .map(Flashcard::sortOrder)
+                .max(Integer::compareTo)
+                .orElse(Integer.MIN_VALUE);
     }
 
     /**
@@ -173,8 +173,8 @@ public class InMemoryDataSource {
     private void assertSortOrderConstraints() {
         // Get all the sort orders...
         var sortOrders = flashcards.values().stream()
-            .map(Flashcard::sortOrder)
-            .collect(Collectors.toList());
+                .map(Flashcard::sortOrder)
+                .collect(Collectors.toList());
 
         // Non-negative...
         assert sortOrders.stream().allMatch(i -> i >= 0);
@@ -187,3 +187,4 @@ public class InMemoryDataSource {
         assert sortOrders.stream().allMatch(i -> i <= maxSortOrder);
     }
 }
+

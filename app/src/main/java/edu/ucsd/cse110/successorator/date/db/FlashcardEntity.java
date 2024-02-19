@@ -16,6 +16,8 @@ public class FlashcardEntity {
     public String front;
     @ColumnInfo(name = "back")
     public String back;
+
+
     @ColumnInfo(name = "sort_order")
     public int sortOrder;
 

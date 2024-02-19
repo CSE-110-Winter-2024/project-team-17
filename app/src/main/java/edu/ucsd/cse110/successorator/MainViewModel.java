@@ -25,13 +25,13 @@ public class MainViewModel extends ViewModel {
     private final MutableSubject<String> displayedText;
 
     public static final ViewModelInitializer<MainViewModel> initializer =
-        new ViewModelInitializer<>(
-            MainViewModel.class,
-            creationExtras -> {
-                var app = (SuccessoratorApplication) creationExtras.get(APPLICATION_KEY);
-                assert app != null;
-                return new MainViewModel(app.getFlashcardRepository());
-            });
+            new ViewModelInitializer<>(
+                    MainViewModel.class,
+                    creationExtras -> {
+                        var app = (SuccessoratorApplication) creationExtras.get(APPLICATION_KEY);
+                        assert app != null;
+                        return new MainViewModel(app.getFlashcardRepository());
+                    });
 
     public MainViewModel(FlashcardRepository flashcardRepository) {
         this.flashcardRepository = flashcardRepository;
@@ -50,8 +50,17 @@ public class MainViewModel extends ViewModel {
             if (cards == null) return; // not ready yet, ignore
 
             var newOrderedCards = cards.stream()
-                    .sorted(Comparator.comparingInt(Flashcard::sortOrder))
+                    .sorted((card1, card2) -> {
+                        boolean finished1 = card1.finished();
+                        boolean finished2 = card2.finished();
+                        if (finished1 != finished2) {
+                            return finished1 ? 1 : -1; // Unfinished cards first
+                        }
+                        return Integer.compare(card1.sortOrder(), card2.sortOrder()); // Then by existing sortOrder
+                    })
                     .collect(Collectors.toList());
+
+            orderedCards.setValue(newOrderedCards);
 
             orderedCards.setValue(newOrderedCards);
         });
@@ -131,5 +140,23 @@ public class MainViewModel extends ViewModel {
 
     public void remove(int id) {
         flashcardRepository.remove(id);
+    }
+
+    public void refreshOrderedCards() {
+        var cards = this.orderedCards.getValue();
+        if (cards == null) return;
+
+        var newOrderedCards = cards.stream()
+                .sorted((card1, card2) -> {
+                    boolean finished1 = card1.finished();
+                    boolean finished2 = card2.finished();
+                    if (finished1 != finished2) {
+                        return finished1 ? 1 : -1; // Unfinished cards first
+                    }
+                    return Integer.compare(card1.sortOrder(), card2.sortOrder()); // Then by existing sortOrder
+                })
+                .collect(Collectors.toList());
+
+        orderedCards.setValue(newOrderedCards);
     }
 }

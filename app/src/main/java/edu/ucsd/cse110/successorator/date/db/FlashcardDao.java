@@ -45,14 +45,14 @@ public interface FlashcardDao {
     @Transaction default int append(FlashcardEntity flashcard) {
         var maxSortOrder = getMaxSortOrder();
         var newFlashcard = new FlashcardEntity(
-            flashcard.front, flashcard.back, maxSortOrder + 1
+                flashcard.front, flashcard.back, maxSortOrder + 1
         );
         return Math.toIntExact(insert(newFlashcard));
     }
     @Transaction default int prepend(FlashcardEntity flashcard) {
         shiftSortOrders(getMinSortOrder(), getMaxSortOrder(), 1);
         var newFlashcard = new FlashcardEntity(
-            flashcard.front, flashcard.back, getMinSortOrder() - 1
+                flashcard.front, flashcard.back, getMinSortOrder() - 1
         );
         return Math.toIntExact(insert(newFlashcard));
     }

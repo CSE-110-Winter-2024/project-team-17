@@ -26,9 +26,12 @@ public class CardListFragment extends Fragment {
     private MainViewModel activityModel;
     private FragmentCardListBinding view;
     private CardListAdapter adapter;
+
     private DateInMemoryDataSource dateSource = DateInMemoryDataSource.fromDefault();
     private DateRepository dateRepo = new DateRepository(dateSource);
+
     private Handler handler = new Handler(Looper.getMainLooper());
+
 
     public CardListFragment() {
         // Required empty public constructor
@@ -52,10 +55,14 @@ public class CardListFragment extends Fragment {
         this.activityModel = modelProvider.get(MainViewModel.class);
 
         // Initialize the Adapter (with an empty list for now)
-        this.adapter = new CardListAdapter(requireContext(), List.of(), id -> {
-            var dialogFragment = ConfirmDeleteCardDialogFragment.newInstance(id);
-            dialogFragment.show(getParentFragmentManager(), "ConfirmDeleteCardDialogFragment");
-        });
+        this.adapter = new CardListAdapter(requireContext(), List.of(),
+                id -> {
+                    var dialogFragment = ConfirmDeleteCardDialogFragment.newInstance(id);
+                    dialogFragment.show(getParentFragmentManager(), "ConfirmDeleteCardDialogFragment");
+                },
+                // This is the lambda function for handling changes in card's finished state
+                id -> activityModel.refreshOrderedCards() // Assuming refreshOrderedCards() is a method in MainViewModel
+        );
 
         activityModel.getOrderedCards().observe(cards -> {
             if (cards == null) return;
@@ -63,9 +70,8 @@ public class CardListFragment extends Fragment {
             adapter.addAll(new ArrayList<>(cards)); // remember the mutable copy here!
             adapter.notifyDataSetChanged();
         });
-
-
     }
+
 
     @Nullable
     @Override
@@ -83,10 +89,22 @@ public class CardListFragment extends Fragment {
         view.advanceButton.setOnClickListener(v ->{
             dateRepo.advanceDate();
             view.dateView.setText(dateRepo.getDate());
+            var cards = activityModel.getOrderedCards().getValue();
+            for(int i = 0; i < cards.size(); i++){
+                if(cards.get(i).finished()){
+                    activityModel.remove(cards.get(i).id());
+                }
+            }
+            adapter.clear();
+            adapter.addAll(new ArrayList<>(cards)); // remember the mutable copy here!
+            adapter.notifyDataSetChanged();
+
+
+
         });
         scheduleUpdateTask();
 
-        setupObservers();
+
 
         return view.getRoot();
     }
@@ -101,23 +119,5 @@ public class CardListFragment extends Fragment {
                 scheduleUpdateTask();
             }
         }, 1000);
-    }
-
-    private void setupObservers() {
-        // Assuming getOrderedCards() now correctly returns a SimpleSubject<List<Flashcard>>
-        activityModel.getOrderedCards().observe(cards -> {
-            getActivity().runOnUiThread(() -> {
-                if (cards == null || cards.isEmpty()) {
-                    view.textViewNoTasks.setVisibility(View.VISIBLE);
-                } else {
-                    view.textViewNoTasks.setVisibility(View.GONE);
-                }
-                adapter.clear();
-                if (cards != null) {
-                    adapter.addAll(cards);
-                }
-                adapter.notifyDataSetChanged();
-            });
-        });
     }
 }

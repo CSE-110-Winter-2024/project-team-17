@@ -62,5 +62,9 @@ public class RoomFlashcardRepository implements FlashcardRepository {
         flashcardDao.delete(id);
     }
 
+    public void removeFinished(int id) {
+        flashcardDao.delete(id);
+    }
+
 
 }
