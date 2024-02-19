@@ -18,7 +18,7 @@ public class DateTest {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.DATE ,1);
         calendar.set(Calendar.MONTH ,0);
-        calendar.set(Calendar.HOUR, 0);
+        calendar.set(Calendar.HOUR, 10);
         source.setDate(calendar);
         assertEquals("Monday, 01/01",source.getDate());
 
