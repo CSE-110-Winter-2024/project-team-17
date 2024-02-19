@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Successorator</string>
+    <string name="app_name">SECards</string>
     <string name="app_title">Successorator</string>
     <string name="hello_world">Hello, World!</string>
     <string name="previous">Previous</string>
@@ -18,5 +18,4 @@
     <string name="card_back_text">Card Back Text</string>
     <string name="remove_button">Remove button</string>
     <string name="add_button">+</string>
-    <string name="no_goals_text">No goals for the Day. Click the + at the upper right to enter your Most Important Thing.</string>
 </resources>

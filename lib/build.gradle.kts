@@ -9,5 +9,5 @@ java {
 
 dependencies {
     implementation("androidx.annotation:annotation:1.7.1")
-    testImplementation("org.testng:testng:6.9.6")
+    testImplementation("junit:junit:4.13.2")
 }
