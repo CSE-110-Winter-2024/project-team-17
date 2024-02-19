@@ -159,4 +159,27 @@ public class MainViewModel extends ViewModel {
 
         orderedCards.setValue(newOrderedCards);
     }
+
+    public void reorderCards(int id) {
+        var cards = this.orderedCards.getValue();
+        if (cards == null) return;
+
+        //Get the card to move
+        var moveCard = cards.stream()
+                .filter(c -> c.id() == id)
+                .findFirst()
+                .orElse(null);
+        assert moveCard != null;
+        if (!moveCard.finished()) {//If its supposed to be done, then move to the bottom
+            var newCards = Flashcards.reorder(cards, id, cards.size()-1);
+            //var newCards = Flashcards.rotate(cards, 1);
+            newCards.get(cards.size()-1).flipFinished();
+            flashcardRepository.save(newCards);
+        }
+        else {//Not done, them move to top
+            var newCards = Flashcards.reorder(cards, id, 0);
+            newCards.get(0).flipFinished();
+            flashcardRepository.save(newCards);
+        }
+    }
 }

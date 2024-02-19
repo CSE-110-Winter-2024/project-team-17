@@ -90,6 +90,8 @@ public class CardListAdapter extends ArrayAdapter<Flashcard> {
             addAll(items);
             notifyDataSetChanged();
 
+
+
         });
 
         binding.cardDeleteButton.setOnClickListener(v -> {
