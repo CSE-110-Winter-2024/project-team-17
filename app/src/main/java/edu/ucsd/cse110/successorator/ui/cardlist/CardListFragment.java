@@ -99,12 +99,9 @@ public class CardListFragment extends Fragment {
             adapter.addAll(new ArrayList<>(cards)); // remember the mutable copy here!
             adapter.notifyDataSetChanged();
 
-
-
         });
         scheduleUpdateTask();
-
-
+        setupObservers();
 
         return view.getRoot();
     }
@@ -119,5 +116,23 @@ public class CardListFragment extends Fragment {
                 scheduleUpdateTask();
             }
         }, 1000);
+    }
+
+    private void setupObservers() {
+        // Assuming getOrderedCards() now correctly returns a SimpleSubject<List<Flashcard>>
+        activityModel.getOrderedCards().observe(cards -> {
+            getActivity().runOnUiThread(() -> {
+                if (cards == null || cards.isEmpty()) {
+                    view.textViewNoTasks.setVisibility(View.VISIBLE);
+                } else {
+                    view.textViewNoTasks.setVisibility(View.GONE);
+                }
+                adapter.clear();
+                if (cards != null) {
+                    adapter.addAll(cards);
+                }
+                adapter.notifyDataSetChanged();
+            });
+        });
     }
 }
