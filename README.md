@@ -2,6 +2,9 @@
 
 ---
 
+## Credits
+This project is highly based on the labs in CSE 110. A bit shoutout to all the TAs and tutors in CSE 110 WI 2024 for the project backbone.
+
 ## Summary
 
 This is a team project for CSE 110. We are designing a task list app called Successorator for our user using Android studio. The project will be on java only.
