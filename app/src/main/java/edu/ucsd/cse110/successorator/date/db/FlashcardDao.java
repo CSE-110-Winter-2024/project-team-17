@@ -1,4 +1,4 @@
-package edu.ucsd.cse110.secards.app.data.db;
+package edu.ucsd.cse110.successorator.date.db;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;

@@ -1,11 +1,11 @@
-package edu.ucsd.cse110.secards.app.data.db;
+package edu.ucsd.cse110.successorator.date.db;
 
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-import edu.ucsd.cse110.secards.lib.domain.Flashcard;
+import edu.ucsd.cse110.successorator.lib.domain.Flashcard;
 
 @Entity(tableName = "flashcards")
 public class FlashcardEntity {

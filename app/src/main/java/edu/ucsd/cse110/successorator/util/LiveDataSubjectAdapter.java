@@ -1,10 +1,10 @@
-package edu.ucsd.cse110.secards.app.util;
+package edu.ucsd.cse110.successorator.util;
 
-import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
-import edu.ucsd.cse110.secards.lib.util.Observer;
-import edu.ucsd.cse110.secards.lib.util.Subject;
+
+import edu.ucsd.cse110.successorator.lib.util.Observer;
+import edu.ucsd.cse110.successorator.lib.util.Subject;
 
 public class LiveDataSubjectAdapter<T> implements Subject<T> {
     private final LiveData<T> adaptee;

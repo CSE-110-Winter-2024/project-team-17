@@ -2,46 +2,20 @@ package edu.ucsd.cse110.successorator.lib.domain;
 
 import java.util.List;
 
-import edu.ucsd.cse110.successorator.lib.data.InMemoryDataSource;
 import edu.ucsd.cse110.successorator.lib.util.Subject;
 
-public class FlashcardRepository {
-    private final InMemoryDataSource dataSource;
+public interface FlashcardRepository {
+    Subject<Flashcard> find(int id);
 
-    public FlashcardRepository(InMemoryDataSource dataSource) {
-        this.dataSource = dataSource;
-    }
+    Subject<List<Flashcard>> findAll();
 
-    public Subject<Flashcard> find(int id) {
-        return dataSource.getFlashcardSubject(id);
-    }
+    void save(Flashcard flashcard);
 
-    public Subject<List<Flashcard>> findAll() {
-        return dataSource.getAllFlashcardsSubject();
-    }
+    void save(List<Flashcard> flashcards);
 
-    public void save(Flashcard flashcard) {
-        dataSource.putFlashcard(flashcard);
-    }
+    void remove(int id);
 
-    public void save(List<Flashcard> flashcards) {
-        dataSource.putFlashcards(flashcards);
-    }
+    void append(Flashcard flashcard);
 
-    public void remove(int id) {
-        dataSource.removeFlashcard(id);
-    }
-
-    public void append(Flashcard flashcard) {
-        dataSource.putFlashcard(
-                flashcard.withSortOrder(dataSource.getMaxSortOrder() + 1)
-        );
-    }
-
-    public void prepend(Flashcard flashcard) {
-        dataSource.shiftSortOrders(0, dataSource.getMaxSortOrder(), 1);
-        dataSource.putFlashcard(
-                flashcard.withSortOrder(dataSource.getMinSortOrder() - 1)
-        );
-    }
+    void prepend(Flashcard flashcard);
 }

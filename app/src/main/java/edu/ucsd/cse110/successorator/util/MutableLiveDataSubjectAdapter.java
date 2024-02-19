@@ -1,7 +1,8 @@
-package edu.ucsd.cse110.secards.app.util;
+package edu.ucsd.cse110.successorator.util;
 
 import androidx.lifecycle.MutableLiveData;
-import edu.ucsd.cse110.secards.lib.util.MutableSubject;
+
+import edu.ucsd.cse110.successorator.lib.util.MutableSubject;
 
 public class MutableLiveDataSubjectAdapter<T>
         extends LiveDataSubjectAdapter<T>

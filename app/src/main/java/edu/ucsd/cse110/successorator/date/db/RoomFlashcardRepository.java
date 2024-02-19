@@ -1,4 +1,4 @@
-package edu.ucsd.cse110.secards.app.data.db;
+package edu.ucsd.cse110.successorator.date.db;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
@@ -6,10 +6,10 @@ import androidx.lifecycle.Transformations;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import edu.ucsd.cse110.secards.app.util.LiveDataSubjectAdapter;
-import edu.ucsd.cse110.secards.lib.domain.Flashcard;
-import edu.ucsd.cse110.secards.lib.domain.FlashcardRepository;
-import edu.ucsd.cse110.secards.lib.util.Subject;
+import edu.ucsd.cse110.successorator.util.LiveDataSubjectAdapter;
+import edu.ucsd.cse110.successorator.lib.domain.Flashcard;
+import edu.ucsd.cse110.successorator.lib.domain.FlashcardRepository;
+import edu.ucsd.cse110.successorator.lib.util.Subject;
 
 public class RoomFlashcardRepository implements FlashcardRepository {
     private final FlashcardDao flashcardDao;
