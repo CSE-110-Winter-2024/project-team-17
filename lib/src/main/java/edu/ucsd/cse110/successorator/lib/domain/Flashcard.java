@@ -11,7 +11,7 @@ public class Flashcard implements Serializable {
     private final @NonNull String front;
     private final @NonNull String back;
 
-    private boolean finished = false;
+    private boolean finished;
     private int sortOrder;
 
     public Flashcard(@Nullable Integer id, @NonNull String front, @NonNull String back, int sortOrder) {
@@ -19,6 +19,7 @@ public class Flashcard implements Serializable {
         this.front = front;
         this.back = back;
         this.sortOrder = sortOrder;
+        this.finished=false;
     }
 
     public @Nullable Integer id() {

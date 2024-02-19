@@ -19,6 +19,38 @@ public class Flashcards {
         return newCards;
     }
 
+    public static List<Flashcard> reorder(List<Flashcard> cards, int id, int index) {
+        // Find the flashcard with the given id
+        Flashcard flashcardToReorder = null;
+        int currentIndex = -1;
+        for (int i = 0; i < cards.size(); i++) {
+            if (cards.get(i).id() == id) {
+                flashcardToReorder = cards.get(i);
+                currentIndex = i;
+                break;
+            }
+        }
+
+        // If flashcard with given id not found, return original list
+        if (flashcardToReorder == null) {
+            return cards;
+        }
+
+        // Remove the flashcard from its current position
+        cards.remove(currentIndex);
+
+        // Adjust index if it exceeds the size of the list
+        if (index > cards.size()) {
+            index = cards.size();
+        }
+
+        // Insert the flashcard at the new position
+        cards.add(index, flashcardToReorder);
+
+        return cards;
+    }
+
+
     @NonNull
     public static List<Flashcard> shuffle(List<Flashcard> cards) {
         var sortOrders = cards.stream()
