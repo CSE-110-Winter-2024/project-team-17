@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-
 import edu.ucsd.cse110.successorator.DateViewModel;
 import edu.ucsd.cse110.successorator.databinding.FragmentDateBinding;
 

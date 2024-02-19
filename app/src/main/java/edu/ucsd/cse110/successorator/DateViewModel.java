@@ -1,6 +1,5 @@
 package edu.ucsd.cse110.successorator;
 
-
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.viewmodel.ViewModelInitializer;
 

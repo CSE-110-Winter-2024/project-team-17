@@ -1,6 +1,8 @@
 package edu.ucsd.cse110.successorator.ui.cardlist;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,8 @@ import java.util.List;
 
 import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.databinding.FragmentCardListBinding;
+import edu.ucsd.cse110.successorator.lib.data.DateInMemoryDataSource;
+import edu.ucsd.cse110.successorator.lib.domain.DateRepository;
 import edu.ucsd.cse110.successorator.ui.cardlist.dialog.ConfirmDeleteCardDialogFragment;
 import edu.ucsd.cse110.successorator.ui.cardlist.dialog.CreateCardDialogFragment;
 
@@ -22,6 +26,9 @@ public class CardListFragment extends Fragment {
     private MainViewModel activityModel;
     private FragmentCardListBinding view;
     private CardListAdapter adapter;
+    private DateInMemoryDataSource dateSource = DateInMemoryDataSource.fromDefault();
+    private DateRepository dateRepo = new DateRepository(dateSource);
+    private Handler handler = new Handler(Looper.getMainLooper());
 
     public CardListFragment() {
         // Required empty public constructor
@@ -65,11 +72,35 @@ public class CardListFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         this.view = FragmentCardListBinding.inflate(inflater, container, false);
 
+        // Set the adapter on the ListView
         view.cardList.setAdapter(adapter);
+
+        view.createCardButton.setOnClickListener(v -> {
+            var dialogFragment = CreateCardDialogFragment.newInstance();
+            dialogFragment.show(getParentFragmentManager(), "CreateCardDialogFormat");
+        });
+        view.dateView.setText(dateRepo.getDate());
+        view.advanceButton.setOnClickListener(v ->{
+            dateRepo.advanceDate();
+            view.dateView.setText(dateRepo.getDate());
+        });
+        scheduleUpdateTask();
 
         setupObservers();
 
         return view.getRoot();
+    }
+
+    private void scheduleUpdateTask() {
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //observe the changing date value;
+                view.dateView.setText(dateRepo.getDate());
+                // refreshing every 5 second
+                scheduleUpdateTask();
+            }
+        }, 1000);
     }
 
     private void setupObservers() {
