@@ -2,21 +2,27 @@ package edu.ucsd.cse110.successorator;
 
 import android.app.Application;
 
+import edu.ucsd.cse110.successorator.lib.data.InMemoryDataSource;
 import edu.ucsd.cse110.successorator.lib.domain.DateRepository;
 import edu.ucsd.cse110.successorator.lib.data.DateInMemoryDataSource;
+import edu.ucsd.cse110.successorator.lib.domain.FlashcardRepository;
 
 public class SuccessoratorApplication extends Application {
-    private DateInMemoryDataSource dateSource;
-    private DateRepository dateRepo;
+    private InMemoryDataSource dataSource;
+    private FlashcardRepository flashcardRepository;
+    private DateRepository dateRepository;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        this.dateSource = DateInMemoryDataSource.fromDefault();
-        this.dateRepo = new DateRepository(dateSource);
+
+        this.dataSource = InMemoryDataSource.fromDefault();
+        this.flashcardRepository = new FlashcardRepository(dataSource);
     }
 
-    public DateRepository getDateRepository() {
-        return dateRepo;
+    public FlashcardRepository getFlashcardRepository() {
+        return flashcardRepository;
     }
+
+    public DateRepository getDateRepository() { return dateRepository; }
 }
