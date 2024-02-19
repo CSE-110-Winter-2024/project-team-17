@@ -46,7 +46,8 @@ public class CreateCardDialogFragment extends DialogFragment {
         this.view = FragmentDialogCreateCardBinding.inflate(getLayoutInflater());
 
         return new AlertDialog.Builder(getActivity())
-                .setTitle("Add Task")
+                .setTitle("New Task")
+                .setMessage("Please provide the new Task text")
                 .setView(view.getRoot())
                 .setPositiveButton("Create", this::onPositiveButtonClick)
                 .setNegativeButton("Cancel", this::onNegativeButtonClick)
@@ -59,9 +60,8 @@ public class CreateCardDialogFragment extends DialogFragment {
 
     private void onPositiveButtonClick(DialogInterface dialog, int which) {
         var front = view.cardFrontEditText.getText().toString();
-        var back = view.cardBackEditText.getText().toString();
 
-        var card = new Flashcard(null, front, back, -1);
+        var card = new Flashcard(null, front, "Task", -1);
 
         if (view.appendRadioButton.isChecked()) {
             activityModel.append(card);
@@ -75,3 +75,4 @@ public class CreateCardDialogFragment extends DialogFragment {
         dialog.dismiss();
     }
 }
+

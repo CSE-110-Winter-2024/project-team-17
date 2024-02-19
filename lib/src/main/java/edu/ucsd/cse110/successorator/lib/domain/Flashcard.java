@@ -10,6 +10,8 @@ public class Flashcard implements Serializable {
     private final @Nullable Integer id;
     private final @NonNull String front;
     private final @NonNull String back;
+
+    private boolean finished = false;
     private int sortOrder;
 
     public Flashcard(@Nullable Integer id, @NonNull String front, @NonNull String back, int sortOrder) {
@@ -58,5 +60,13 @@ public class Flashcard implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(id, front, back, sortOrder);
+    }
+
+    public boolean finished() {
+        return finished;
+    }
+
+    public void flipFinished(){
+        finished = !finished;
     }
 }
