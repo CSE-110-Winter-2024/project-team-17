@@ -7,8 +7,6 @@ import static org.junit.Assert.assertEquals;
 import java.util.Calendar;
 import org.junit.Test;
 
-import edu.ucsd.cse110.successorator.lib.data.DateInMemoryDataSource;
-
 public class DateTest {
     //Test format and test update on 2AM
     @Test

@@ -1,28 +1,39 @@
 package edu.ucsd.cse110.successorator;
 
+
 import static androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY;
 
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.viewmodel.ViewModelInitializer;
 
+import java.sql.Time;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import edu.ucsd.cse110.successorator.lib.domain.Flashcard;
-import edu.ucsd.cse110.successorator.lib.domain.FlashcardRepository;
-import edu.ucsd.cse110.successorator.lib.domain.Flashcards;
+import edu.ucsd.cse110.successorator.data.db.SharedTimeRepository;
+import edu.ucsd.cse110.successorator.lib.domain.Task;
+import edu.ucsd.cse110.successorator.lib.domain.TaskRepository;
+import edu.ucsd.cse110.successorator.lib.domain.Tasks;
+import edu.ucsd.cse110.successorator.lib.domain.TimeKeeper;
 import edu.ucsd.cse110.successorator.lib.util.MutableSubject;
 import edu.ucsd.cse110.successorator.lib.util.SimpleSubject;
 import edu.ucsd.cse110.successorator.lib.util.Subject;
 
-public class MainViewModel extends ViewModel {
-    // Domain state (true "Model" state)
-    private final FlashcardRepository flashcardRepository;
-    private final MutableSubject<List<Flashcard>> orderedCards;
-    private final MutableSubject<Flashcard> topCard;
-    private final MutableSubject<Boolean> isShowingFront;
-    private final MutableSubject<String> displayedText;
+public class MainViewModel extends ViewModel{
+
+    private final MutableSubject<List<Task>> orderedCards;
+
+    private final TaskRepository taskRepository;
+
+    private final MutableSubject<LocalDateTime> time;
+
+    private final TimeKeeper timeRepo;
+
+    private int timeOffset = 1;
+
+    private int timeAdvCnt = 0;
 
     public static final ViewModelInitializer<MainViewModel> initializer =
             new ViewModelInitializer<>(
@@ -30,156 +41,96 @@ public class MainViewModel extends ViewModel {
                     creationExtras -> {
                         var app = (SuccessoratorApplication) creationExtras.get(APPLICATION_KEY);
                         assert app != null;
-                        return new MainViewModel(app.getFlashcardRepository());
+                        return new MainViewModel(app.getTaskRepository(), app.getTimeRepo());
                     });
 
-    public MainViewModel(FlashcardRepository flashcardRepository) {
-        this.flashcardRepository = flashcardRepository;
+    public MainViewModel(TaskRepository taskRepository, TimeKeeper timeRepo) {
+        this.taskRepository = taskRepository;
+        this.timeRepo = timeRepo;
 
         // Create the observable subjects.
         this.orderedCards = new SimpleSubject<>();
-        this.topCard = new SimpleSubject<>();
-        this.isShowingFront = new SimpleSubject<>();
-        this.displayedText = new SimpleSubject<>();
+        this.time = new SimpleSubject<>();
 
-        // Initialize...
-        isShowingFront.setValue(true);
 
         // When the list of cards changes (or is first loaded), reset the ordering.
-        flashcardRepository.findAll().observe(cards -> {
+        taskRepository.findAll().observe(cards -> {
             if (cards == null) return; // not ready yet, ignore
 
-            var newOrderedCards = cards.stream()
-                    .sorted((card1, card2) -> {
-                        boolean finished1 = card1.finished();
-                        boolean finished2 = card2.finished();
-                        if (finished1 != finished2) {
-                            return finished1 ? 1 : -1; // Unfinished cards first
-                        }
-                        return Integer.compare(card1.sortOrder(), card2.sortOrder()); // Then by existing sortOrder
-                    })
+            var newOrderedCards = cards.stream().sorted(Comparator.comparingInt(Task::sortOrder))
                     .collect(Collectors.toList());
 
             orderedCards.setValue(newOrderedCards);
-
-            orderedCards.setValue(newOrderedCards);
         });
+        timeRepo.getDateTime().observe(dates -> {
+            if(dates == null) return;
 
-        // When the ordering changes, update the top card.
-        orderedCards.observe(cards -> {
-            if (cards == null || cards.size() == 0) return;
-            var card = cards.get(0);
-            this.topCard.setValue(card);
-        });
+            time.setValue(dates);
+            deleteFinished();
 
-        // When the top card changes, update the displayed text and display the front side.
-        topCard.observe(card -> {
-            if (card == null) return;
-
-            displayedText.setValue(card.front());
-            isShowingFront.setValue(true);
-        });
-
-        // When isShowingFront changes, update the displayed text.
-        isShowingFront.observe(isShowingFront -> {
-            if (isShowingFront == null) return;
-
-            var card = topCard.getValue();
-            if (card == null) return;
-
-            var text = isShowingFront ? card.front() : card.back();
-            displayedText.setValue(text);
         });
     }
-
-    public Subject<String> getDisplayedText() {
-        return displayedText;
-    }
-
-    public Subject<List<Flashcard>> getOrderedCards() {
+    public Subject<List<Task>> getOrderedCards() {
         return orderedCards;
     }
 
-    public void flipTopCard() {
-        var isShowingFront = this.isShowingFront.getValue();
-        if (isShowingFront == null) return;
-        this.isShowingFront.setValue(!isShowingFront);
+    public Subject<LocalDateTime> getTime() {
+        return time;
     }
 
-    public void stepForward() {
-        var cards = this.orderedCards.getValue();
-        if (cards == null) return;
+    public void add(Task task) {
+        var tasks = this.orderedCards.getValue();
+        var newTasks = Tasks.addNewTask(tasks, task);
+        taskRepository.save(newTasks);
 
-        var newCards = Flashcards.rotate(cards, -1);
-        flashcardRepository.save(newCards);
     }
 
-    public void stepBackward() {
-        var cards = this.orderedCards.getValue();
-        if (cards == null) return;
+    public void deleteFinished() {
 
-        var newCards = Flashcards.rotate(cards, 1);
-        flashcardRepository.save(newCards);
-    }
-
-    public void shuffle() {
-        var cards = this.orderedCards.getValue();
-        if (cards == null) return;
-
-        var newCards = Flashcards.shuffle(cards);
-        flashcardRepository.save(newCards);
-    }
-
-    public void append(Flashcard card) {
-        flashcardRepository.append(card);
-    }
-
-    public void prepend(Flashcard card) {
-        flashcardRepository.prepend(card);
-    }
-
-    public void remove(int id) {
-        flashcardRepository.remove(id);
-    }
-
-    public void refreshOrderedCards() {
-        var cards = this.orderedCards.getValue();
-        if (cards == null) return;
-
-        var newOrderedCards = cards.stream()
-                .sorted((card1, card2) -> {
-                    boolean finished1 = card1.finished();
-                    boolean finished2 = card2.finished();
-                    if (finished1 != finished2) {
-                        return finished1 ? 1 : -1; // Unfinished cards first
-                    }
-                    return Integer.compare(card1.sortOrder(), card2.sortOrder()); // Then by existing sortOrder
-                })
-                .collect(Collectors.toList());
-
-        orderedCards.setValue(newOrderedCards);
-    }
-
-    public void reorderCards(int id) {
-        var cards = this.orderedCards.getValue();
-        if (cards == null) return;
-
-        //Get the card to move
-        var moveCard = cards.stream()
-                .filter(c -> c.id() == id)
-                .findFirst()
-                .orElse(null);
-        assert moveCard != null;
-        if (!moveCard.finished()) {//If its supposed to be done, then move to the bottom
-            var newCards = Flashcards.reorder(cards, id, cards.size()-1);
-            //var newCards = Flashcards.rotate(cards, 1);
-            newCards.get(cards.size()-1).flipFinished();
-            flashcardRepository.save(newCards);
+        var tasks = this.orderedCards.getValue();
+        if(tasks == null){
+            return;
         }
-        else {//Not done, them move to top
-            var newCards = Flashcards.reorder(cards, id, 0);
-            newCards.get(0).flipFinished();
-            flashcardRepository.save(newCards);
+        for(int i = tasks.size()-1; i>= 0; i--){
+            if(tasks.get(i).finished()){
+                taskRepository.remove(tasks.get(i).id());
+            }else{
+                break;
+            }
         }
     }
+
+    public void removeFinished() {
+        taskRepository.removeFinished();
+    }
+
+    public void reorder(Task task) {
+        var tasks = this.orderedCards.getValue();
+        var newTasks = Tasks.reorder(tasks, task);
+        taskRepository.save(newTasks);
+    }
+
+    public void append(Task card) {
+        taskRepository.append(card);
+    }
+
+    public void timeAdvance(){
+        //time.setValue(time.getValue().plusDays(timeOffset));
+        //timeRepo.setDateTime(time.getValue().plusDays(timeOffset));
+        time.setValue(time.getValue().plusDays(timeOffset));
+        timeAdvCnt++;
+        deleteFinished();
+    }
+
+    public int getTimeAdvCnt(){
+        return timeAdvCnt;
+    }
+
+    public void timeSet(LocalDateTime now) {
+        //time.setValue(now);
+        timeRepo.setDateTime(now);
+        deleteFinished();
+    }
+
+
 }

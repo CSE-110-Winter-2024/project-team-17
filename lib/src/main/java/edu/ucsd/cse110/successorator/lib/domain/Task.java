@@ -3,73 +3,84 @@ package edu.ucsd.cse110.successorator.lib.domain;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+
+import java.io.Serializable;
 import java.util.Objects;
+
 
 public class Task {
 
     private final @Nullable Integer id;
+    private int sortOrder;
+    private String taskName;
+
+    private boolean finished = false;
 
 
-    private final @NonNull String name;
-    private boolean isFinished = false;
-    private @NonNull int order;
-
-
-    public Task(Integer id, String name, int order){
+    public Task (Integer id, String taskName, int sortOrder) {
         this.id = id;
-        this.name = name;
-        this.order = order;
+        this.taskName = taskName;
+        this.sortOrder = sortOrder;
     }
 
-
-    public @NonNull String name(){
-        return this.name;
+    public Task (Integer id, String taskName, int sortOrder, boolean finished) {
+        this.id = id;
+        this.taskName = taskName;
+        this.sortOrder = sortOrder;
+        this.finished = finished;
     }
 
-    public int order(){
-        return this.order;
-    }
-
-    public @NonNull Integer id(){
+    public @Nullable Integer id() {
         return id;
     }
 
-    public Task withId(Integer id) {
-        return new Task(id, name, order);
-    }
-
-    public Task withOrder(int order) {
-        return new Task(id, name, order);
-    }
-
-    public void setOrder(int order){
-        this.order = order;
+    public @NonNull String taskNmae() {
+        return taskName;
     }
 
 
-    public void switchFinish(){
-        this.isFinished = !isFinished;
+    public int sortOrder() {
+        return sortOrder;
     }
 
     public boolean finished() {
-        return this.isFinished;
+        return finished;
     }
 
+    public void flipFinished() {
+        finished = !finished;
+    }
+
+    public Task withId(int id) {
+        return new Task(id, this.taskName, this.sortOrder, this.finished);
+    }
+
+    public Task withSortOrder(int sortOrder) {
+        return new Task(this.id, this.taskName, sortOrder, this.finished);
+    }
+
+    public Task withFinished(boolean finished) {
+        return new Task(this.id, this.taskName, this.sortOrder, finished);
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return Objects.equals(id, task.id) && Objects.equals(name, task.name);
+        return Objects.equals(id, task.id) &&
+                Objects.equals(taskName, task.taskName) &&
+                sortOrder == task.sortOrder &&
+                finished == task.finished;
     }
 
     @Override
     public int hashCode() {
-        //throw new NotImplementedException("hashCode");
-        return Objects.hash(id, name);
-
+        return Objects.hash(id, taskName, sortOrder);
     }
 
+    public void setSortOrder(int i) {
+        this.sortOrder = i;
+    }
 
 }

@@ -4,45 +4,58 @@ import android.app.Application;
 
 import androidx.room.Room;
 
-import edu.ucsd.cse110.successorator.date.db.RoomFlashcardRepository;
-import edu.ucsd.cse110.successorator.date.db.TasksDatabase;
+import java.time.LocalDateTime;
+
+import edu.ucsd.cse110.successorator.data.db.DateSharedPref;
+import edu.ucsd.cse110.successorator.data.db.RoomTaskRepository;
+import edu.ucsd.cse110.successorator.data.db.SharedTimeRepository;
+import edu.ucsd.cse110.successorator.data.db.SuccessoratorDatabase;
 import edu.ucsd.cse110.successorator.lib.data.InMemoryDataSource;
-import edu.ucsd.cse110.successorator.lib.domain.DateRepository;
-import edu.ucsd.cse110.successorator.lib.domain.FlashcardRepository;
+import edu.ucsd.cse110.successorator.lib.domain.TaskRepository;
+import edu.ucsd.cse110.successorator.lib.domain.TimeKeeper;
 
 public class SuccessoratorApplication extends Application {
     private InMemoryDataSource dataSource;
-    private FlashcardRepository flashcardRepository;
-    private DateRepository dateRepository;
+    private TaskRepository taskRepository;
+
+    private SharedTimeRepository dateRepo;
+
+
+
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        this.dataSource = InMemoryDataSource.fromDefault();
-
         var database = Room.databaseBuilder(
-                        getApplicationContext(), TasksDatabase.class, "secards-database"
-                )
-                .allowMainThreadQueries()
-                .build();
+                getApplicationContext(),
+                SuccessoratorDatabase.class,
+                "successorator-database"
+        ).allowMainThreadQueries().build();
+        DateSharedPref dateSharedPreference = new DateSharedPref(this);
 
-        this.flashcardRepository = new RoomFlashcardRepository(database.flashcardDao());
+        this.taskRepository = new RoomTaskRepository(database.flashcardDao());
+        this.dateRepo = new SharedTimeRepository(dateSharedPreference);
 
-        var sharedPreferences = getSharedPreferences("secards", MODE_PRIVATE);
-        var isFirstRun = sharedPreferences.getBoolean("isFirstRun", true);
 
-        if (isFirstRun && database.flashcardDao().count() == 0) {
-            flashcardRepository.save(InMemoryDataSource.DEFAULT_CARDS);
-            sharedPreferences.edit()
+        var sharedPreference = getSharedPreferences("successorator", MODE_PRIVATE);
+        var isFirstRun = sharedPreference.getBoolean("isFirstRun", true);
+
+        if(isFirstRun && database.flashcardDao().count() == 0){
+            taskRepository.save(InMemoryDataSource.DEFAULT_CARDS);
+            dateRepo.setDateTime(LocalDateTime.now());
+
+            sharedPreference.edit()
                     .putBoolean("isFirstRun", false)
                     .apply();
         }
+
     }
 
-    public FlashcardRepository getFlashcardRepository() {
-        return flashcardRepository;
+    public TaskRepository getTaskRepository() {
+        return taskRepository;
     }
-
-    public DateRepository getDateRepository() { return dateRepository; }
+    public TimeKeeper getTimeRepo() {
+        return dateRepo;
+    }
 }
