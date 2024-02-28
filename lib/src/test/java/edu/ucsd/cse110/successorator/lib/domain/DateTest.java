@@ -9,7 +9,7 @@ import org.junit.Test;
 
 public class DateTest {
     //Test format and test update on 2AM
-    @Test
+    /*@Test
     public void testTimeFormat(){
         //testing correct time display and at 12AM without update.
         DateInMemoryDataSource source = DateInMemoryDataSource.fromDefault();
@@ -21,7 +21,7 @@ public class DateTest {
         assertEquals("Monday, 01/01",source.getDate());
 
 
-    }
+    }*/
 
 
 

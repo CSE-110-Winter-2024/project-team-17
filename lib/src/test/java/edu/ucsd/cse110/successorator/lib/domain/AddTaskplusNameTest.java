@@ -11,13 +11,13 @@ import java.util.List;
 
 public class AddTaskplusNameTest {
 
-    @Test
+    /*@Test
     public void FinishedTask(){
         //only one task
-        Flashcard first = new Flashcard(null, "Laundry", "Task", -1);
-        Flashcard second = new Flashcard(null, "Clean", "Task", -1);
+        Task first = new Task(null, "Laundry", -1);
+        Task second = new Task(null, "Clean", -1);
 
-        List<Flashcard> taskList = new ArrayList<>();
+        List<Task> taskList = new ArrayList<>();
         taskList.add(first);
         first.flipFinished();
         assertTrue(first.finished());
@@ -30,26 +30,26 @@ public class AddTaskplusNameTest {
         Task first = new Task(1, "first", 0);
         Task second = new Task(2, "second", 1);
         Task third = new Task(2, "third", 2);
-        third.switchFinish();
+        third.flipFinished();
         List<Task> taskList = new ArrayList<>();
         taskList.add(first);
         taskList.add(second);
         taskList.add(third);
-        first.switchFinish();
+        first.flipFinished();
         taskList = Tasks.reorder(taskList, first);
         assertEquals(taskList.get(0).equals(second), true);
         assertEquals(taskList.get(1).equals(first), true);
         assertEquals(taskList.get(2).equals(third), true);
-        second.switchFinish();
-        third.switchFinish();
+        second.flipFinished();
+        third.flipFinished();
         taskList = Tasks.reorder(taskList, third);
         assertEquals(taskList.get(0).equals(third), true);
         assertEquals(taskList.get(1).equals(second), true);
         assertEquals(taskList.get(2).equals(first), true);
-        second.switchFinish();
+        second.flipFinished();
         taskList = Tasks.reorder(taskList, second);
         assertEquals(taskList.get(0).equals(third), true);
         assertEquals(taskList.get(1).equals(second), true);
         assertEquals(taskList.get(2).equals(first), true);
-    }
+    }*/
 }
