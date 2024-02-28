@@ -11,5 +11,8 @@
         android:layout_height="53dp"
         android:gravity="center"
         android:text="Task Name"
-        android:textSize="24sp" />
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
