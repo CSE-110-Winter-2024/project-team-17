@@ -11,7 +11,6 @@ import java.util.List;
 
 @Dao
 public interface TaskDao {
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     Long insert(TaskEntity task);
 
@@ -49,8 +48,8 @@ public interface TaskDao {
     default  int append(TaskEntity task){
         var maxSortOrder = getMaxSortOrder();
         var newFlashcard = new TaskEntity(
-                task.name, maxSortOrder +1, task.finished
-        );
+                task.name, maxSortOrder +1, task.finished,
+                task.addedDate, task.frequency, task.tag);
         return Math.toIntExact(insert(newFlashcard));
     }
 
@@ -58,16 +57,16 @@ public interface TaskDao {
     default int prepend(TaskEntity task){
         shiftSortOrder(getMinSortOrder(),getMaxSortOrder(), 1);
         var newFlashcard = new TaskEntity(
-                task.name, getMinSortOrder()-1, task.finished
-        );
+                task.name, getMinSortOrder()-1, task.finished,
+                task.addedDate, task.frequency, task.tag);
         return Math.toIntExact(insert(newFlashcard));
     }
 
     @Transaction
     default  int add(TaskEntity task){
         var newFlashcard = new TaskEntity(
-                task.name, task.sortOrder, task.finished
-        );
+                task.name, task.sortOrder, task.finished,
+                task.addedDate, task.frequency, task.tag);
         return Math.toIntExact(insert(newFlashcard));
     }
 

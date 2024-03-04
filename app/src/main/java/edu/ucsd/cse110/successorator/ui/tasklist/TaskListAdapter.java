@@ -70,7 +70,7 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
 
 
         // Populate the view with the flashcard's data.
-        binding.textView2.setText(task.taskNmae());
+        binding.textView2.setText(task.taskName());
         if(!task.finished()){
             binding.textView2.setPaintFlags(0);
         }else{
