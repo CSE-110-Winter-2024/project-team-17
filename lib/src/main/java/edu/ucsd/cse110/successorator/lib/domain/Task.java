@@ -12,9 +12,13 @@ public class Task {
 
     private final @Nullable Integer id;
     private int sortOrder;
-    private String taskName;
+    private final String taskName;
+    private boolean finished;
 
-    private boolean finished = false;
+    private String addedDate;
+    private int frequency;
+
+    private char tag;
 
 
     public Task (Integer id, String taskName, int sortOrder) {
@@ -23,18 +27,23 @@ public class Task {
         this.sortOrder = sortOrder;
     }
 
-    public Task (Integer id, String taskName, int sortOrder, boolean finished) {
+    public Task (Integer id, String taskName, int sortOrder, boolean finished, String addedDate, int frequency, char tag) {
         this.id = id;
         this.taskName = taskName;
         this.sortOrder = sortOrder;
-        this.finished = finished;
+        this.finished = false;
+        this.addedDate = addedDate;
+        this.frequency = frequency;
+        this.tag = tag;
+
+
     }
 
     public @Nullable Integer id() {
         return id;
     }
 
-    public @NonNull String taskNmae() {
+    public @NonNull String taskName() {
         return taskName;
     }
 
@@ -51,16 +60,20 @@ public class Task {
         finished = !finished;
     }
 
+    public void setFrequency(int frequency) {
+        this.frequency = frequency;
+    }
+
     public Task withId(int id) {
-        return new Task(id, this.taskName, this.sortOrder, this.finished);
+        return new Task(id, this.taskName, this.sortOrder, this.finished, this.addedDate, this.frequency, this.tag);
     }
 
     public Task withSortOrder(int sortOrder) {
-        return new Task(this.id, this.taskName, sortOrder, this.finished);
+        return new Task(this.id, this.taskName, sortOrder, this.finished, this.addedDate, this.frequency, this.tag);
     }
 
     public Task withFinished(boolean finished) {
-        return new Task(this.id, this.taskName, this.sortOrder, finished);
+        return new Task(this.id, this.taskName, this.sortOrder, finished, this.addedDate, this.frequency, this.tag);
     }
 
     @Override
@@ -83,4 +96,15 @@ public class Task {
         this.sortOrder = i;
     }
 
+    public String addedDate() {
+        return this.addedDate;
+    }
+
+    public int frequency() {
+        return this.frequency;
+    }
+
+    public char tag() {
+        return this.tag;
+    }
 }

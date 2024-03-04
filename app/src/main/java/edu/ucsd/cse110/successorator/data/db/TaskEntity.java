@@ -16,26 +16,38 @@ public class TaskEntity {
     @ColumnInfo(name = "name")
     public String name;
 
-
     @ColumnInfo(name = "sort_order")
     public int sortOrder;
 
     @ColumnInfo(name = "finished")
     public boolean finished;
 
-    public TaskEntity(String name, int sortOrder, boolean finished) {
+    @ColumnInfo(name = "addedDate")
+    public String addedDate;
+
+    @ColumnInfo(name = "frequency")
+    public int frequency;
+
+    @ColumnInfo(name = "tag")
+    public char tag;
+
+
+    public TaskEntity(String name, int sortOrder, boolean finished, String addedDate, int frequency, char tag) {
         this.name = name;
         this.sortOrder = sortOrder;
         this.finished = finished;
+        this.addedDate = addedDate;
+        this.frequency = frequency;
+        this.tag = tag;
     }
 
     public static TaskEntity fromTask(@NonNull Task task) {
-        var card = new TaskEntity(task.taskNmae(), task.sortOrder(), task.finished());
+        var card = new TaskEntity(task.taskName(), task.sortOrder(), task.finished(), task.addedDate(), task.frequency(), task.tag());
         card.id = task.id();
         return card;
     }
 
     public @NonNull Task toTask() {
-        return new Task(id, name, sortOrder, finished);
+        return new Task(id, name, sortOrder, finished, addedDate, frequency, tag);
     }
 }
