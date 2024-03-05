@@ -80,6 +80,7 @@ public class TaskListFragment extends  Fragment{
         view.dateView.setText("Test");
 
         view.AddButton.setOnClickListener(v -> {
+            //TODO: Base on today list change the dialog
             var dialogFragment = CreateTaskDialogFragment.newInstance();
             dialogFragment.show(getParentFragmentManager(), "CreateTaskDialogFragment");
         });
