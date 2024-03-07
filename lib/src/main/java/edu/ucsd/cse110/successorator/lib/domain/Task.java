@@ -16,6 +16,8 @@ public class Task {
     private boolean finished;
 
     private String addedDate;
+    private String currOccurDate;
+    private String nextOccurDate;
     private int frequency;
 
     private char tag;
@@ -35,6 +37,8 @@ public class Task {
         this.addedDate = addedDate;
         this.frequency = frequency;
         this.tag = tag;
+        this.currOccurDate = new String(addedDate);
+        this.nextOccurDate = null;
 
 
     }
@@ -76,6 +80,9 @@ public class Task {
         return new Task(this.id, this.taskName, this.sortOrder, finished, this.addedDate, this.frequency, this.tag);
     }
 
+    public void updateRecurrence() {
+        //Can call this to update currOccurDate and nextOccurDate?
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -99,6 +106,10 @@ public class Task {
     public String addedDate() {
         return this.addedDate;
     }
+
+    public String currOccurDate() { return this.currOccurDate;}
+
+    public String nextOccurDate() { return this.nextOccurDate;}
 
     public int frequency() {
         return this.frequency;

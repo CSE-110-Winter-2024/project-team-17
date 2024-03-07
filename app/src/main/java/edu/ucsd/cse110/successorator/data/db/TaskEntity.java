@@ -25,6 +25,12 @@ public class TaskEntity {
     @ColumnInfo(name = "addedDate")
     public String addedDate;
 
+    @ColumnInfo(name = "currOccurDate")
+    public String currOccurDate;
+
+    @ColumnInfo(name = "nextOccurDate")
+    public String nextOccurDate;
+
     @ColumnInfo(name = "frequency")
     public int frequency;
 
@@ -32,7 +38,7 @@ public class TaskEntity {
     public char tag;
 
 
-    public TaskEntity(String name, int sortOrder, boolean finished, String addedDate, int frequency, char tag) {
+    public TaskEntity(String name, int sortOrder, boolean finished, String addedDate, String currOccurDate, String nextOccurDate, int frequency, char tag) {
         this.name = name;
         this.sortOrder = sortOrder;
         this.finished = finished;
@@ -42,7 +48,7 @@ public class TaskEntity {
     }
 
     public static TaskEntity fromTask(@NonNull Task task) {
-        var card = new TaskEntity(task.taskName(), task.sortOrder(), task.finished(), task.addedDate(), task.frequency(), task.tag());
+        var card = new TaskEntity(task.taskName(), task.sortOrder(), task.finished(), task.addedDate(), task.currOccurDate(), task.nextOccurDate(), task.frequency(), task.tag());
         card.id = task.id();
         return card;
     }
