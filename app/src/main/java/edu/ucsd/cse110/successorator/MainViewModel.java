@@ -3,6 +3,8 @@ package edu.ucsd.cse110.successorator;
 
 import static androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.viewmodel.ViewModelInitializer;
 
@@ -35,6 +37,16 @@ public class MainViewModel extends ViewModel{
 
     private int timeAdvCnt = 0;
 
+    private MutableLiveData<Integer> uiState = new MutableLiveData<>();
+
+    LiveData<Integer> getUIState() {
+        return uiState;
+    }
+
+    public void setUIState(int newState) {
+        uiState.setValue(newState);
+    }
+
     public static final ViewModelInitializer<MainViewModel> initializer =
             new ViewModelInitializer<>(
                     MainViewModel.class,
@@ -66,7 +78,8 @@ public class MainViewModel extends ViewModel{
             if(dates == null) return;
 
             time.setValue(dates);
-            deleteFinished();
+            //TODO: This is causing some random removing task issue when switch view
+            //deleteFinished();
 
         });
     }
@@ -122,6 +135,10 @@ public class MainViewModel extends ViewModel{
         deleteFinished();
     }
 
+    public LocalDateTime getOffSetTime(){
+        return time.getValue().plusDays(timeAdvCnt);
+    }
+
     public int getTimeAdvCnt(){
         return timeAdvCnt;
     }
@@ -129,7 +146,8 @@ public class MainViewModel extends ViewModel{
     public void timeSet(LocalDateTime now) {
         //time.setValue(now);
         timeRepo.setDateTime(now);
-        deleteFinished();
+        //TODO: THis is probably causing random removing finish
+        //deleteFinished();
     }
 
 

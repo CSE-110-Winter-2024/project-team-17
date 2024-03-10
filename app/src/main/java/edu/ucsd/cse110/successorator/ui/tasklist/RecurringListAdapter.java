@@ -4,12 +4,9 @@ package edu.ucsd.cse110.successorator.ui.tasklist;
 import android.content.Context;
 import android.graphics.Paint;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.PopupMenu;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -18,15 +15,14 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import edu.ucsd.cse110.successorator.MainViewModel;
-import edu.ucsd.cse110.successorator.R;
 import edu.ucsd.cse110.successorator.databinding.TaskItemBinding;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
-public class TaskListAdapter extends ArrayAdapter<Task> {
+public class RecurringListAdapter extends ArrayAdapter<Task> {
 
     Consumer<Integer> onChangeClick;
     MainViewModel activityModel;
 
-    public TaskListAdapter(
+    public RecurringListAdapter(
             Context context,
             List<Task> flashcards,
             Consumer<Integer> onChangeClick
@@ -35,7 +31,7 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
         this.onChangeClick = onChangeClick;
     }
 
-    public TaskListAdapter(
+    public RecurringListAdapter(
             Context context,
             List<Task> flashcards,
             MainViewModel activityModel
@@ -45,7 +41,7 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
         this.activityModel = activityModel;
     }
 
-    public TaskListAdapter(Context context, List<Task> tasks) {
+    public RecurringListAdapter(Context context, List<Task> tasks) {
         // This sets a bunch of stuff internally, which we can access
         // with getContext() and getItem() for example.
         //
@@ -82,36 +78,23 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
                     binding.textView2.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         }
         binding.textView2.setOnLongClickListener(v -> {
-            PopupMenu popup = new PopupMenu(getContext(), v);
-            popup.getMenuInflater().inflate(R.menu.menu, popup.getMenu());
-            String message = "";
+            if(!task.finished()){
+                binding.textView2.setPaintFlags(
+                        binding.textView2.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            }else{
+                binding.textView2.setPaintFlags(0);
+            }
+            task.flipFinished();
+            //TODO: bug
+            activityModel.reorder(task);
 
-           popup.setOnMenuItemClickListener(item ->{
-           switch(item.getItemId()){
-               case (1000007):
-                   Toast.makeText(getContext(), "TODAY", Toast.LENGTH_SHORT).show();
-                   break;
-
-               case (1000023):
-                   Toast.makeText(getContext(), "tomorrow", Toast.LENGTH_SHORT).show();
-                   break;
-
-               case (1000026):
-                   Toast.makeText(getContext(), "finish", Toast.LENGTH_SHORT).show();
-                   break;
-
-               case (1000022):
-                   Toast.makeText(getContext(), "delete", Toast.LENGTH_SHORT).show();
-                   break;
-
-               default:
-                   return false;
-           }
-           return true;
-           });
-            popup.show();
+            //not sure to use or not yet.
+            /*var id = task.id();
+            assert id != null;
+            onChangeClick.accept(id);*/
             return true;
         });
+
         return binding.getRoot();
     }
 

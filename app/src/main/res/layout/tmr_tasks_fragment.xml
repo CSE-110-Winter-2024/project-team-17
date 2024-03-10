@@ -54,5 +54,4 @@
         tools:listitem="@layout/task_item">
 
     </ListView>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

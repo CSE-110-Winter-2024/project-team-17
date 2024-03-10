@@ -5,6 +5,9 @@ import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,6 +21,7 @@ import java.time.format.DateTimeFormatter;
 
 import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.databinding.TasksFragmentBinding;
+import edu.ucsd.cse110.successorator.R;
 import edu.ucsd.cse110.successorator.ui.tasklist.dialog.CreateTaskDialogFragment;
 
 public class TaskListFragment extends  Fragment{
@@ -27,8 +31,12 @@ public class TaskListFragment extends  Fragment{
     private TasksFragmentBinding view;
     private TaskListAdapter adapter;
 
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE MM/dd");
+    private Spinner spinner;
+
+    //private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE MM/dd");
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE MM/dd");
     private String formattedDateTime;
+    private String formattedTmrDateTime;
 
     private Handler handler = new Handler();
 
@@ -75,9 +83,12 @@ public class TaskListFragment extends  Fragment{
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         this.view = TasksFragmentBinding.inflate(inflater, container, false);
 
+
+
+
         // Set the adapter on the ListView
         view.listView.setAdapter(adapter);
-        view.dateView.setText("Test");
+        //view.dateView.setText("Test");
 
         view.AddButton.setOnClickListener(v -> {
             //TODO: Base on today list change the dialog
@@ -85,23 +96,62 @@ public class TaskListFragment extends  Fragment{
             dialogFragment.show(getParentFragmentManager(), "CreateTaskDialogFragment");
         });
 
-        if(LocalDateTime.now() != activityModel.getTime().getValue()){
-            activityModel.removeFinished();
+        //TODO: Comment out these two lines
+
+
+        /*if(LocalDateTime.now() != activityModel.getTime().getValue()){
+            //activityModel.removeFinished();
             activityModel.timeSet(LocalDateTime.now());
-        }
+        }*/
         updateTime();
 
 
         view.advanceButton.setOnClickListener(v -> {
+            //TODO: Reset the right swap list view
             activityModel.timeAdvance();
+            //activityModel.setUIState(1);
         });
+
+        String[] daysItems = {"Today "+formattedDateTime, "Tmr "+formattedTmrDateTime, "Pending", "Recurring"};
+        spinner = view.spinner;
+
+        ArrayAdapter<String> daysadapter = new ArrayAdapter<>(requireContext(),
+                android.R.layout.simple_spinner_item, daysItems);
+
+        daysadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(daysadapter);
 
         //newly Added
         activityModel.getTime().observe(dates -> {
             if( dates == null) return;
+            formattedDateTime = activityModel.getOffSetTime().format(formatter);
+            formattedTmrDateTime = activityModel.getOffSetTime().plusDays(1).format(formatter);
+            daysItems[0] = "Today "+formattedDateTime;
+            daysItems[1] = "Tmr "+formattedTmrDateTime;
+            spinner.setAdapter(daysadapter);
 
-            formattedDateTime = activityModel.getTime().getValue().format(formatter);
-            view.dateView.setText(formattedDateTime);
+            //view.dateView.setText(formattedDateTime);
+        });
+
+
+
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                if(position == 1){
+                    activityModel.setUIState(1);
+                }else if(position == 2){
+                    activityModel.setUIState(2);
+                }else if(position == 3){
+                    activityModel.setUIState(3);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // Handle no selection
+            }
         });
 
 
@@ -120,20 +170,25 @@ public class TaskListFragment extends  Fragment{
             @Override
             public void run() {
 
-                if(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()).getYear() != activityModel.getTime().getValue().getYear()) {
+                LocalDateTime now = LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt());
+
+                if(now.getYear() != activityModel.getTime().getValue().getYear()) {
                     activityModel.timeSet(LocalDateTime.now());
                     activityModel.removeFinished();
                 }
-                if(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()).getMonth() != activityModel.getTime().getValue().getMonth()) {
+                if(now.getMonth() != activityModel.getTime().getValue().getMonth()) {
                     activityModel.timeSet(LocalDateTime.now());
                     activityModel.removeFinished();
                 }
-                if(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()).getDayOfMonth() != activityModel.getTime().getValue().getDayOfMonth()){
-                    if(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()).getDayOfMonth() != activityModel.getTime().getValue().getDayOfMonth()+1 &&
-                            LocalDateTime.now().getHour() > 2) {
+                if(now.getDayOfMonth() != activityModel.getTime().getValue().getDayOfMonth()){
+                    activityModel.timeSet(LocalDateTime.now());
+                    activityModel.removeFinished();
+                    //TODO: Commented out the 2am restraint for simplicity
+                    /*if(now.getDayOfMonth() != activityModel.getTime().getValue().getDayOfMonth()+1 &&
+                            now.getHour() > 2) {
                         activityModel.timeSet(LocalDateTime.now());
                         activityModel.removeFinished();
-                    }
+                    }*/
                 }
 
                 // Call this method again after 1 second
