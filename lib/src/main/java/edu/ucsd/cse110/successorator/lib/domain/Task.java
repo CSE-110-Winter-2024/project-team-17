@@ -39,8 +39,6 @@ public class Task {
         this.tag = tag;
         this.currOccurDate = new String(addedDate);
         this.nextOccurDate = null;
-
-
     }
 
     public @Nullable Integer id() {

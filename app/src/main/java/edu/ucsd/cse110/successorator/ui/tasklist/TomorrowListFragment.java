@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -22,8 +23,8 @@ import java.util.List;
 
 import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.databinding.TmrTasksFragmentBinding;
+import edu.ucsd.cse110.successorator.lib.domain.Task;
 import edu.ucsd.cse110.successorator.ui.tasklist.dialog.CreateTomorrowTaskDialogFragment;
-
 
 public class TomorrowListFragment extends  Fragment{
 
@@ -80,9 +81,44 @@ public class TomorrowListFragment extends  Fragment{
             dialogFragment.show(getParentFragmentManager(), "ConfirmDeleteCardDialogFragment");
         }*/);
         activityModel.getOrderedCards().observe(cards -> {
-            var newcards = cards;
-            for(int i = 0; i < newcards.size(); i++) {
-                if(newcards.get(i).taskName().equals("A")){
+
+            //Determine the current date as a string
+            LocalDateTime currentDateTime = LocalDateTime.now();
+            LocalDateTime tomorrowDateTime = currentDateTime.plusDays(1);
+            int year = tomorrowDateTime.getYear();
+            int month = tomorrowDateTime.getMonthValue(); // Month value is 1-based
+            int dayOfMonth = tomorrowDateTime.getDayOfMonth();
+            DayOfWeek dayOfWeek = tomorrowDateTime.getDayOfWeek();
+            // You can then use the DayOfWeek enum directly, or you can get its value as an int if needed
+            int dayOfWeekValue = dayOfWeek.getValue(); // Monday is 1, Sunday is 7
+            String dayOfWeekName = dayOfWeek.toString();
+
+            int[] dateArray = new int[4];
+            dateArray[0] = dayOfWeekValue;
+            dateArray[1] = month;
+            dateArray[2] = dayOfMonth;
+            dateArray[3] = year;
+            String monthStr;
+            if (month < 10) {
+                monthStr = "0" + Integer.toString(month);
+            }
+            else {
+                monthStr = Integer.toString(month);
+            }
+            String dayStr;
+            if (dayOfMonth < 10) {
+                dayStr = "0" + Integer.toString(dayOfMonth);
+            }
+            else {
+                dayStr = Integer.toString(dayOfMonth);
+            }
+            String nowDate = Integer.toString(dayOfWeekValue) + monthStr + dayStr + Integer.toString(year);
+            List<Task> newcards = new ArrayList<Task>(cards);
+
+            for (int i = 0; i < newcards.size(); i++) {
+                //Extract the date from cards
+                String currDate = newcards.get(i).currOccurDate();
+                if (nowDate.compareTo(currDate) != 0) {
                     newcards.remove(i);
                 }
             }
@@ -166,12 +202,6 @@ public class TomorrowListFragment extends  Fragment{
                 // Handle no selection
             }
         });
-
-
-
-
-
-
 
 
         return view.getRoot();

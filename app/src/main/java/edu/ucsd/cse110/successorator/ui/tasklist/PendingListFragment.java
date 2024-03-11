@@ -23,6 +23,7 @@ import java.util.List;
 import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.databinding.PendingTasksFragmentBinding;
 import edu.ucsd.cse110.successorator.databinding.TasksFragmentBinding;
+import edu.ucsd.cse110.successorator.lib.domain.Task;
 import edu.ucsd.cse110.successorator.ui.tasklist.dialog.CreatePendingTaskDialogFragment;
 import edu.ucsd.cse110.successorator.ui.tasklist.dialog.CreateTaskDialogFragment;
 
@@ -81,9 +82,17 @@ public class PendingListFragment extends  Fragment{
             dialogFragment.show(getParentFragmentManager(), "ConfirmDeleteCardDialogFragment");
         }*/);
         activityModel.getOrderedCards().observe(cards -> {
-            if (cards == null) return;
+            List<Task> newcards = new ArrayList<Task>(cards);
+            for (int i = 0; i < newcards.size(); i++) {
+                //Extract the date from cards
+                String currDate = newcards.get(i).currOccurDate();
+                if (newcards.get(i).finished()) {
+                    newcards.remove(i);
+                }
+            }
+            if (newcards == null) return;
             adapter.clear();
-            adapter.addAll(new ArrayList<>(cards)); // remember the mutable copy here!
+            adapter.addAll(new ArrayList<>(newcards)); // remember the mutable copy here!
             adapter.notifyDataSetChanged();
         });
     }
