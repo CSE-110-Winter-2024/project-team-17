@@ -13,7 +13,7 @@ public class Task {
     private final @Nullable Integer id;
     private int sortOrder;
     private final String taskName;
-    private boolean finished;
+    private boolean finished = false;
 
     private String addedDate;
     private String currOccurDate;
@@ -33,7 +33,7 @@ public class Task {
         this.id = id;
         this.taskName = taskName;
         this.sortOrder = sortOrder;
-        this.finished = false;
+        this.finished = finished;
         this.addedDate = addedDate;
         this.frequency = frequency;
         this.tag = tag;
