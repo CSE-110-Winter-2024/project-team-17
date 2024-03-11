@@ -2,17 +2,16 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <EditText
         android:id="@+id/card_front_edit_text"
         android:layout_width="0dp"
         android:layout_height="48dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:ems="10"
-        android:hint="Task Name"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:hint="Enter new task name..."
         android:inputType="text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -20,97 +19,114 @@
 
     <EditText
         android:id="@+id/editTextDate"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="Input Date"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="8dp"
+        android:hint="Starting date..."
         android:inputType="date"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView3" />
-
-    <TextView
-        android:id="@+id/textView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Starting from..."
-        android:textSize="20sp"
-        app:layout_constraintBottom_toTopOf="@+id/editTextDate"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="parent" />
-
-    <com.google.android.material.chip.ChipGroup
-        android:id="@+id/chipGroup"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/textView3"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/radioGroup">
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/home_chip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="H" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/work_chip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="W" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/school_chip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="S" />
-
-        <com.google.android.material.chip.Chip
-            android:id="@+id/errand_chip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="E" />
-    </com.google.android.material.chip.ChipGroup>
+        app:layout_constraintTop_toBottomOf="@+id/card_front_edit_text" />
 
     <RadioGroup
         android:id="@+id/radioGroup"
-        android:layout_width="409dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@+id/chipGroup"
+        android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/card_front_edit_text">
+        app:layout_constraintTop_toBottomOf="@+id/editTextDate"
+        android:layout_marginTop="8dp">
 
         <RadioButton
             android:id="@+id/daily_radio_button"
-            android:layout_width="87dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="4dp"
             android:text="Daily" />
-
-        <RadioButton
-            android:id="@+id/monthly_radio_button"
-            android:layout_width="97dp"
-            android:layout_height="wrap_content"
-            android:text="Monthly" />
-
-        <RadioButton
-            android:id="@+id/yearly_radio_button"
-            android:layout_width="3dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Yearly" />
 
         <RadioButton
             android:id="@+id/weekly_radio_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_margin="4dp"
             android:text="Weekly" />
 
+        <RadioButton
+            android:id="@+id/monthly_radio_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:text="Monthly" />
+
+        <RadioButton
+            android:id="@+id/yearly_radio_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="4dp"
+            android:text="Yearly" />
+
     </RadioGroup>
+
+    <LinearLayout
+        android:id="@+id/chipGroup"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:padding="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/radioGroup"
+        android:layout_marginTop="8dp">
+
+        <ImageView
+            android:id="@+id/homeTag"
+            android:contentDescription="home tag"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_margin="8dp"
+            android:src="@drawable/home"
+            android:clickable="true"
+            android:focusable="true"
+            android:scaleType="centerInside" />
+
+        <ImageView
+            android:id="@+id/workTag"
+            android:contentDescription="work tag"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_margin="8dp"
+            android:src="@drawable/work"
+            android:clickable="true"
+            android:focusable="true"
+            android:scaleType="centerInside" />
+
+        <ImageView
+            android:id="@+id/schoolTag"
+            android:contentDescription="school tag"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_margin="8dp"
+            android:src="@drawable/school"
+            android:clickable="true"
+            android:focusable="true"
+            android:scaleType="centerInside" />
+
+        <ImageView
+            android:id="@+id/errandTag"
+            android:contentDescription="errand tag"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_margin="8dp"
+            android:src="@drawable/errand"
+            android:clickable="true"
+            android:focusable="true"
+            android:scaleType="centerInside" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
