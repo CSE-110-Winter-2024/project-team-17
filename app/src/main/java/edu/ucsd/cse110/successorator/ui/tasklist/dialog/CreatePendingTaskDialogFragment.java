@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.widget.ImageView;
+
 import java.time.LocalDateTime; // Import the LocalDateTime class from java.time package
 import java.time.DayOfWeek; // Import the DayOfWeek enum from java.time package
 import androidx.annotation.NonNull;
@@ -22,6 +24,8 @@ public class CreatePendingTaskDialogFragment extends DialogFragment{
     private FragmentDialogCreatePendingBinding view;
 
     private MainViewModel activityModel;
+    private char selectedTag = 'H';
+    private ImageView lastSelectedTag;
 
     CreatePendingTaskDialogFragment() {
 
@@ -50,12 +54,39 @@ public class CreatePendingTaskDialogFragment extends DialogFragment{
 
         return new AlertDialog.Builder(getActivity())
                 .setTitle("New Task")
-                .setMessage("Please provide the new task name.")
                 .setView(view.getRoot())
                 .setPositiveButton("Create", this::onPositiveButtonClick)
                 .setNegativeButton("Cancel", this::OnNegativeButtonClick)
                 .create();
     };
+
+    private void setupTagSelection() {
+        // Initialize ImageViews from the binding
+        ImageView homeTag = view.homeTag;
+        ImageView workTag = view.workTag;
+        ImageView schoolTag = view.schoolTag;
+        ImageView errandTag = view.errandTag;
+
+        // Set the default selected tag
+        setSelectedTag(homeTag, 'H'); // Default to homeTag and 'H' for Home
+
+        // Set click listeners and update the selected tag accordingly
+        homeTag.setOnClickListener(v -> setSelectedTag((ImageView) v, 'H'));
+        workTag.setOnClickListener(v -> setSelectedTag((ImageView) v, 'W'));
+        schoolTag.setOnClickListener(v -> setSelectedTag((ImageView) v, 'S'));
+        errandTag.setOnClickListener(v -> setSelectedTag((ImageView) v, 'E'));
+    }
+
+    private void setSelectedTag(ImageView selectedTag, char tag) {
+        if (lastSelectedTag != null) {
+            lastSelectedTag.setSelected(false); // Unselect the last ImageView
+        }
+
+        selectedTag.setSelected(true); // Select the new ImageView
+        lastSelectedTag = selectedTag;
+
+        this.selectedTag = tag; // Update the selected tag
+    }
 
     private void onPositiveButtonClick(DialogInterface dialog, int which) {
         var front = view.cardFrontEditText.getText().toString();
@@ -90,7 +121,7 @@ public class CreatePendingTaskDialogFragment extends DialogFragment{
         }
         //TODO: Add task context
         String dateString = Integer.toString(dayOfWeekValue) + monthStr + dayStr + Integer.toString(year);
-        var card = new Task(null, front, -1, false, dateString, 0, '\0');
+        var card = new Task(null, front, -1, false, dateString, 0, selectedTag);
         int frequency = -1;
         card.setFrequency(frequency);
         activityModel.add(card);
