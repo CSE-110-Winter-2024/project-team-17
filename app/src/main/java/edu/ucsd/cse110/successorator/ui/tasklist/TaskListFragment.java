@@ -23,6 +23,8 @@ import java.time.format.DateTimeFormatter;
 import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.databinding.TasksFragmentBinding;
 import edu.ucsd.cse110.successorator.R;
+import edu.ucsd.cse110.successorator.lib.domain.Task;
+import edu.ucsd.cse110.successorator.lib.util.Observer;
 import edu.ucsd.cse110.successorator.ui.tasklist.dialog.CreateTaskDialogFragment;
 
 public class TaskListFragment extends  Fragment{
@@ -59,6 +61,7 @@ public class TaskListFragment extends  Fragment{
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // US5 start
         // Initialize the Model
         var modelOwner = requireActivity();
         var modelFactory = ViewModelProvider.Factory.from(MainViewModel.initializer);
@@ -71,6 +74,18 @@ public class TaskListFragment extends  Fragment{
             var dialogFragment = ConfirmDeleteCardDialogFragment.newInstance(id);
             dialogFragment.show(getParentFragmentManager(), "ConfirmDeleteCardDialogFragment");
         }*/);
+
+        // Observe changes in the filtered tasks
+        activityModel.getFilteredTasks().observe(new Observer<List<Task>>() {
+            @Override
+            public void onChanged(List<Task> newTasks) {
+                if (newTasks != null) {
+                    adapter.updateTasks(newTasks);
+                }
+            }
+        });
+        // US5 end
+
         activityModel.getOrderedCards().observe(cards -> {
             var newcards = cards;
             //Determine the current date as a string

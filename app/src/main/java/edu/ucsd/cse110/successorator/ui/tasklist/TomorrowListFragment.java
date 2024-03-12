@@ -24,6 +24,7 @@ import java.util.List;
 import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.databinding.TmrTasksFragmentBinding;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
+import edu.ucsd.cse110.successorator.lib.util.Observer;
 import edu.ucsd.cse110.successorator.ui.tasklist.dialog.CreateTomorrowTaskDialogFragment;
 
 public class TomorrowListFragment extends  Fragment{
@@ -80,6 +81,18 @@ public class TomorrowListFragment extends  Fragment{
             var dialogFragment = ConfirmDeleteCardDialogFragment.newInstance(id);
             dialogFragment.show(getParentFragmentManager(), "ConfirmDeleteCardDialogFragment");
         }*/);
+
+        // Observe changes in the filtered tasks
+        activityModel.getFilteredTasks().observe(new Observer<List<Task>>() {
+            @Override
+            public void onChanged(List<Task> newTasks) {
+                if (newTasks != null) {
+                    adapter.updateTasks(newTasks);
+                }
+            }
+        });
+
+
         activityModel.getOrderedCards().observe(cards -> {
 
             //Determine the current date as a string

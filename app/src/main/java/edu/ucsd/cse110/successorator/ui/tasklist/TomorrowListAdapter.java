@@ -132,6 +132,11 @@ public class TomorrowListAdapter extends ArrayAdapter<Task> {
         return id;
     }
 
+    public void updateTasks(List<Task> newTasks) {
+        clear();
+        addAll(newTasks); // This should work correctly given TaskListAdapter extends ArrayAdapter<Task>
+        notifyDataSetChanged();
+    }
 
 
 }

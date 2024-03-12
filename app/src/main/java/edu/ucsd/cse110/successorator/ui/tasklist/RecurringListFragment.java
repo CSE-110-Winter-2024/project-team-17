@@ -25,6 +25,7 @@ import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.databinding.RecurringTasksFragmentBinding;
 import edu.ucsd.cse110.successorator.databinding.TasksFragmentBinding;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
+import edu.ucsd.cse110.successorator.lib.util.Observer;
 import edu.ucsd.cse110.successorator.ui.tasklist.dialog.CreateRecurringTaskDialogFragment;
 import edu.ucsd.cse110.successorator.ui.tasklist.dialog.CreateTaskDialogFragment;
 
@@ -82,6 +83,18 @@ public class RecurringListFragment extends  Fragment{
             var dialogFragment = ConfirmDeleteCardDialogFragment.newInstance(id);
             dialogFragment.show(getParentFragmentManager(), "ConfirmDeleteCardDialogFragment");
         }*/);
+
+        // Observe changes in the filtered tasks
+        activityModel.getFilteredTasks().observe(new Observer<List<Task>>() {
+            @Override
+            public void onChanged(List<Task> newTasks) {
+                if (newTasks != null) {
+                    adapter.updateTasks(newTasks);
+                }
+            }
+        });
+
+
         activityModel.getOrderedCards().observe(cards -> {
             List<Task> newcards = new ArrayList<Task>(cards);
 
