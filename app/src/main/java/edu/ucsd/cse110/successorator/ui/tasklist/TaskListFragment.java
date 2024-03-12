@@ -143,13 +143,13 @@ public class TaskListFragment extends  Fragment{
                 //TODO: When creating item must use the getOffsetTime due to Advance time
                 activityModel.getOffSetTime().plusDays(1).format(formatter), "Pending","Recurring"};
 
-        if(LocalDateTime.now() != activityModel.getTime().getValue()){
-            //activityModel.removeFinished();
-            activityModel.timeSet(LocalDateTime.now());
-            String[] newItem = {activityModel.getTime().getValue().format(formatter),
-                    activityModel.getOffSetTime().plusDays(1).format(formatter), "Pending","Recurring"};
-            item = newItem;
-        }
+//        if(LocalDateTime.now() != activityModel.getTime().getValue()){
+//            //activityModel.removeFinished();
+//            activityModel.timeSet(LocalDateTime.now());
+//            String[] newItem = {activityModel.getTime().getValue().format(formatter),
+//                    activityModel.getOffSetTime().plusDays(1).format(formatter), "Pending","Recurring"};
+//            item = newItem;
+//        }
         updateTime();
 
 
