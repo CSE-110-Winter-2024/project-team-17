@@ -202,6 +202,9 @@ public class TaskListFragment extends  Fragment{
         });
         return view.getRoot();
     }
+    public LocalDateTime getOffSetTime(){
+        return time.getValue();
+    }
 
     private void updateTime() {
         // Update time every second
