@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ import java.util.List;
 import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.databinding.RecurringTasksFragmentBinding;
 import edu.ucsd.cse110.successorator.databinding.TasksFragmentBinding;
+import edu.ucsd.cse110.successorator.lib.domain.Task;
 import edu.ucsd.cse110.successorator.ui.tasklist.dialog.CreateRecurringTaskDialogFragment;
 import edu.ucsd.cse110.successorator.ui.tasklist.dialog.CreateTaskDialogFragment;
 
@@ -81,9 +83,18 @@ public class RecurringListFragment extends  Fragment{
             dialogFragment.show(getParentFragmentManager(), "ConfirmDeleteCardDialogFragment");
         }*/);
         activityModel.getOrderedCards().observe(cards -> {
-            if (cards == null) return;
+            List<Task> newcards = new ArrayList<Task>(cards);
+
+            for (int i = 0; i < newcards.size(); i++) {
+                //Extract the date from cards
+
+                if (newcards.get(i).frequency() == 0) {
+                    newcards.remove(i);
+                }
+            }
+            if (newcards == null) return;
             adapter.clear();
-            adapter.addAll(new ArrayList<>(cards)); // remember the mutable copy here!
+            adapter.addAll(new ArrayList<>(newcards)); // remember the mutable copy here!
             adapter.notifyDataSetChanged();
         });
     }
