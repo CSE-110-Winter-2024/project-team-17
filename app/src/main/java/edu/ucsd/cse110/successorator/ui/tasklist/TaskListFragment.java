@@ -23,6 +23,7 @@ import java.time.format.DateTimeFormatter;
 import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.databinding.TasksFragmentBinding;
 import edu.ucsd.cse110.successorator.R;
+import edu.ucsd.cse110.successorator.lib.domain.Task;
 import edu.ucsd.cse110.successorator.ui.tasklist.dialog.CreateTaskDialogFragment;
 
 public class TaskListFragment extends  Fragment{
@@ -72,47 +73,52 @@ public class TaskListFragment extends  Fragment{
             dialogFragment.show(getParentFragmentManager(), "ConfirmDeleteCardDialogFragment");
         }*/);
         activityModel.getOrderedCards().observe(cards -> {
-            var newcards = cards;
             //Determine the current date as a string
-//            LocalDateTime currentDateTime = LocalDateTime.now();
-//            int year = currentDateTime.getYear();
-//            int month = currentDateTime.getMonthValue(); // Month value is 1-based
-//            int dayOfMonth = currentDateTime.getDayOfMonth();
-//            DayOfWeek dayOfWeek = currentDateTime.getDayOfWeek();
-//            // You can then use the DayOfWeek enum directly, or you can get its value as an int if needed
-//            int dayOfWeekValue = dayOfWeek.getValue(); // Monday is 1, Sunday is 7
-//            String dayOfWeekName = dayOfWeek.toString();
-//
-//            int[] dateArray = new int[4];
-//            dateArray[0] = dayOfWeekValue;
-//            dateArray[1] = month;
-//            dateArray[2] = dayOfMonth;
-//            dateArray[3] = year;
-//            String monthStr;
-//            if (month < 10) {
-//                monthStr = "0" + Integer.toString(month);
-//            }
-//            else {
-//                monthStr = Integer.toString(month);
-//            }
-//            String dayStr;
-//            if (dayOfMonth < 10) {
-//                dayStr = "0" + Integer.toString(dayOfMonth);
-//            }
-//            else {
-//                dayStr = Integer.toString(dayOfMonth);
-//            }
-//            String nowDate = Integer.toString(dayOfWeekValue) + monthStr + dayStr + Integer.toString(year);
-//            for (int i = 0; i < newcards.size(); i++) {
-//                //Extract the date from cards
-//                String currDate = newcards.get(i).currOccurDate();
-//                if (nowDate.compareTo(currDate) != 0) {
-//                    newcards.remove(i);
-//                }
-//            }
-            if (newcards == null) return;
+
+            LocalDateTime currentDateTime = LocalDateTime.now();
+            int year = currentDateTime.getYear();
+            int month = currentDateTime.getMonthValue(); // Month value is 1-based
+            int dayOfMonth = currentDateTime.getDayOfMonth();
+            DayOfWeek dayOfWeek = currentDateTime.getDayOfWeek();
+            // You can then use the DayOfWeek enum directly, or you can get its value as an int if needed
+            int dayOfWeekValue = dayOfWeek.getValue(); // Monday is 1, Sunday is 7
+            String dayOfWeekName = dayOfWeek.toString();
+
+            int[] dateArray = new int[4];
+            dateArray[0] = dayOfWeekValue;
+            dateArray[1] = month;
+            dateArray[2] = dayOfMonth;
+            dateArray[3] = year;
+            String monthStr;
+            if (month < 10) {
+                monthStr = "0" + Integer.toString(month);
+            }
+            else {
+                monthStr = Integer.toString(month);
+            }
+            String dayStr;
+            if (dayOfMonth < 10) {
+                dayStr = "0" + Integer.toString(dayOfMonth);
+            }
+            else {
+                dayStr = Integer.toString(dayOfMonth);
+            }
+            String nowDate = Integer.toString(dayOfWeekValue) + monthStr + dayStr + Integer.toString(year);
+            //int size = cards.size();
+            if (cards == null) {
+                return;
+            }
+            List<Task> newcards = new ArrayList<Task>(cards);
+            for (int i = 0; i < newcards.size(); i++) {
+                //Extract the date from cards
+                String currDate = newcards.get(i).currOccurDate();
+                if (nowDate.compareTo(currDate) != 0) {
+                    newcards.remove(i);
+                }
+            }
+
             adapter.clear();
-            adapter.addAll(new ArrayList<>(newcards)); // remember the mutable copy here!
+            adapter.addAll(new ArrayList<>(cards)); // remember the mutable copy here!
             adapter.notifyDataSetChanged();
         });
     }

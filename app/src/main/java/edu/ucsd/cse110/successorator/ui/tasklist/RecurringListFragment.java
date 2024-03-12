@@ -83,6 +83,9 @@ public class RecurringListFragment extends  Fragment{
             dialogFragment.show(getParentFragmentManager(), "ConfirmDeleteCardDialogFragment");
         }*/);
         activityModel.getOrderedCards().observe(cards -> {
+            if (cards == null) {
+                return;
+            }
             List<Task> newcards = new ArrayList<Task>(cards);
 
             for (int i = 0; i < newcards.size(); i++) {
@@ -92,7 +95,6 @@ public class RecurringListFragment extends  Fragment{
                     newcards.remove(i);
                 }
             }
-            if (newcards == null) return;
             adapter.clear();
             adapter.addAll(new ArrayList<>(newcards)); // remember the mutable copy here!
             adapter.notifyDataSetChanged();

@@ -66,7 +66,6 @@ public class TomorrowListFragment extends  Fragment{
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         // Initialize the Model
         var modelOwner = requireActivity();
         var modelFactory = ViewModelProvider.Factory.from(MainViewModel.initializer);
@@ -112,13 +111,16 @@ public class TomorrowListFragment extends  Fragment{
             else {
                 dayStr = Integer.toString(dayOfMonth);
             }
-            String nowDate = Integer.toString(dayOfWeekValue) + monthStr + dayStr + Integer.toString(year);
+            String tmrDate = Integer.toString(dayOfWeekValue) + monthStr + dayStr + Integer.toString(year);
+            if (cards == null) {
+                return;
+            }
             List<Task> newcards = new ArrayList<Task>(cards);
 
             for (int i = 0; i < newcards.size(); i++) {
                 //Extract the date from cards
-                String currDate = newcards.get(i).currOccurDate();
-                if (nowDate.compareTo(currDate) != 0) {
+                String occurDate = newcards.get(i).currOccurDate();
+                if (tmrDate.compareTo(occurDate) != 0) {
                     newcards.remove(i);
                 }
             }
