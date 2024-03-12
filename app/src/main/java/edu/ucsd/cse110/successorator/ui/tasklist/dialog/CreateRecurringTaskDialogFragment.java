@@ -13,12 +13,17 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
+
 import java.util.Calendar;
 
 import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.databinding.FragmentDialogCreateRecurringBinding;
 import edu.ucsd.cse110.successorator.databinding.FragmentDialogCreateTaskBinding;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
+
 public class CreateRecurringTaskDialogFragment extends DialogFragment{
 
     private FragmentDialogCreateRecurringBinding view;
@@ -94,9 +99,22 @@ public class CreateRecurringTaskDialogFragment extends DialogFragment{
         var front = view.cardFrontEditText.getText().toString();
         LocalDateTime currentDateTime = LocalDateTime.now();
 
-        int year = currentDateTime.getYear();
-        int month = currentDateTime.getMonthValue(); // Month value is 1-based
-        int dayOfMonth = currentDateTime.getDayOfMonth();
+        int year = Integer.parseInt(view.editTextYear.getText().toString());
+        int month = Integer.parseInt(view.editTextMonth.getText().toString()); // Month value is 1-based
+        int dayOfMonth = Integer.parseInt(view.editTextDate.getText().toString());;
+        LocalDate selectedDate = LocalDate.of(year, month, dayOfMonth);
+        LocalDateTime dateTime = selectedDate.atTime(LocalTime.NOON);
+
+        try {
+            // Attempt to parse the input into a LocalDateTime object
+            //dateTime = LocalDateTime.parse(date, formatter);
+            // If parsing is successful, break out of the loop
+        } catch (DateTimeParseException e) {
+            // If parsing fails, inform the user and continue the loop
+            System.out.println("Invalid date format. Please enter a valid date.");
+            newInstance();
+        }
+
         DayOfWeek dayOfWeek = currentDateTime.getDayOfWeek();
         // You can then use the DayOfWeek enum directly, or you can get its value as an int if needed
         int dayOfWeekValue = dayOfWeek.getValue(); // Monday is 1, Sunday is 7
