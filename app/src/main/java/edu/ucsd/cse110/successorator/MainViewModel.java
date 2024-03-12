@@ -172,10 +172,6 @@ public class MainViewModel extends ViewModel {
         //deleteFinished();
     }
 
-    public void setContextFilter(Character filter) {
-        this.contextFilter.setValue(filter);
-    }
-
     // Method to apply filtering and sorting
     private void updateFilteredTasks(List<Task> tasks, Character filter) {
         if (tasks == null) return;
@@ -193,6 +189,14 @@ public class MainViewModel extends ViewModel {
 
     public Subject<List<Task>> getFilteredTasks() {
         return filteredTasks;
+    }
+
+    public MutableLiveData<Character> getContextFilter() {
+        return contextFilter;
+    }
+
+    public void setContextFilter(Character filter) {
+        this.contextFilter.setValue(filter);
     }
 
 }
