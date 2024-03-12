@@ -135,9 +135,9 @@ public class MainViewModel extends ViewModel{
         deleteFinished();
     }
 
-    /*public LocalDateTime getOffSetTime(){
-        return time.getValue()/*.plusDays(timeAdvCnt);
-    }*/
+    public LocalDateTime getOffSetTime(){
+        return time.getValue();
+    }
 
     public int getTimeAdvCnt(){
         return timeAdvCnt;
