@@ -19,11 +19,13 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.databinding.PendingTasksFragmentBinding;
 import edu.ucsd.cse110.successorator.databinding.TasksFragmentBinding;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
+import edu.ucsd.cse110.successorator.lib.util.Observer;
 import edu.ucsd.cse110.successorator.ui.tasklist.dialog.CreatePendingTaskDialogFragment;
 import edu.ucsd.cse110.successorator.ui.tasklist.dialog.CreateTaskDialogFragment;
 
@@ -81,6 +83,31 @@ public class PendingListFragment extends  Fragment{
             var dialogFragment = ConfirmDeleteCardDialogFragment.newInstance(id);
             dialogFragment.show(getParentFragmentManager(), "ConfirmDeleteCardDialogFragment");
         }*/);
+
+        // Observe changes in the filtered tasks
+        activityModel.getFilteredTasks().observe(cards -> {
+            List<Task> newcards = new ArrayList<Task>(cards);
+            for (int i = 0; i < newcards.size(); i++) {
+                //Extract the date from cards
+                String currDate = newcards.get(i).currOccurDate();
+                if (newcards.get(i).finished()) {
+                    newcards.remove(i);
+                }
+            }
+            if (newcards == null) return;
+
+            Character currentFilter = activityModel.getContextFilter().getValue();
+            // Apply both the context filter and the specific date logic for this fragment
+            List<Task> filteredTasks = newcards.stream()
+                    .filter(task -> currentFilter == null || task.tag() == currentFilter) // Context filtering logic
+                    // Add here any additional filtering specific to this fragment, e.g., date-based filtering
+                    .collect(Collectors.toList());
+
+            adapter.clear();
+            adapter.addAll(new ArrayList<>(filteredTasks)); // remember the mutable copy here!
+            adapter.notifyDataSetChanged();
+        });
+
         activityModel.getOrderedCards().observe(cards -> {
             List<Task> newcards = new ArrayList<Task>(cards);
             for (int i = 0; i < newcards.size(); i++) {
@@ -91,8 +118,16 @@ public class PendingListFragment extends  Fragment{
                 }
             }
             if (newcards == null) return;
+
+            Character currentFilter = activityModel.getContextFilter().getValue();
+            // Apply both the context filter and the specific date logic for this fragment
+            List<Task> filteredTasks = newcards.stream()
+                    .filter(task -> currentFilter == null || task.tag() == currentFilter) // Context filtering logic
+                    // Add here any additional filtering specific to this fragment, e.g., date-based filtering
+                    .collect(Collectors.toList());
+
             adapter.clear();
-            adapter.addAll(new ArrayList<>(newcards)); // remember the mutable copy here!
+            adapter.addAll(new ArrayList<>(filteredTasks)); // remember the mutable copy here!
             adapter.notifyDataSetChanged();
         });
     }

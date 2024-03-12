@@ -20,10 +20,12 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.databinding.TmrTasksFragmentBinding;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
+import edu.ucsd.cse110.successorator.lib.util.Observer;
 import edu.ucsd.cse110.successorator.ui.tasklist.dialog.CreateTomorrowTaskDialogFragment;
 
 public class TomorrowListFragment extends  Fragment{
@@ -80,6 +82,64 @@ public class TomorrowListFragment extends  Fragment{
             var dialogFragment = ConfirmDeleteCardDialogFragment.newInstance(id);
             dialogFragment.show(getParentFragmentManager(), "ConfirmDeleteCardDialogFragment");
         }*/);
+
+        activityModel.getFilteredTasks().observe(cards -> {
+            //Determine the current date as a string
+            LocalDateTime currentDateTime = LocalDateTime.now();
+            LocalDateTime tomorrowDateTime = currentDateTime.plusDays(1);
+            int year = tomorrowDateTime.getYear();
+            int month = tomorrowDateTime.getMonthValue(); // Month value is 1-based
+            int dayOfMonth = tomorrowDateTime.getDayOfMonth();
+            DayOfWeek dayOfWeek = tomorrowDateTime.getDayOfWeek();
+            // You can then use the DayOfWeek enum directly, or you can get its value as an int if needed
+            int dayOfWeekValue = dayOfWeek.getValue(); // Monday is 1, Sunday is 7
+            String dayOfWeekName = dayOfWeek.toString();
+
+            int[] dateArray = new int[4];
+            dateArray[0] = dayOfWeekValue;
+            dateArray[1] = month;
+            dateArray[2] = dayOfMonth;
+            dateArray[3] = year;
+            String monthStr;
+            if (month < 10) {
+                monthStr = "0" + Integer.toString(month);
+            }
+            else {
+                monthStr = Integer.toString(month);
+            }
+            String dayStr;
+            if (dayOfMonth < 10) {
+                dayStr = "0" + Integer.toString(dayOfMonth);
+            }
+            else {
+                dayStr = Integer.toString(dayOfMonth);
+            }
+            String nowDate = Integer.toString(dayOfWeekValue) + monthStr + dayStr + Integer.toString(year);
+            List<Task> newcards = new ArrayList<Task>(cards);
+
+            for (int i = 0; i < newcards.size(); i++) {
+                //Extract the date from cards
+                String currDate = newcards.get(i).currOccurDate();
+                if (nowDate.compareTo(currDate) != 0) {
+                    newcards.remove(i);
+                }
+            }
+            if (newcards == null) return;
+
+            Character currentFilter = activityModel.getContextFilter().getValue();
+
+            // Apply both the context filter and the specific date logic for this fragment
+            List<Task> filteredTasks = newcards.stream()
+                    .filter(task -> currentFilter == null || task.tag() == currentFilter) // Context filtering logic
+                    // Add here any additional filtering specific to this fragment, e.g., date-based filtering
+                    .collect(Collectors.toList());
+
+            adapter.clear();
+            adapter.addAll(new ArrayList<>(filteredTasks)); // remember the mutable copy here!
+            adapter.notifyDataSetChanged();
+        });
+
+
         activityModel.getOrderedCards().observe(cards -> {
 
             //Determine the current date as a string
@@ -123,8 +183,17 @@ public class TomorrowListFragment extends  Fragment{
                 }
             }
             if (newcards == null) return;
+
+            Character currentFilter = activityModel.getContextFilter().getValue();
+
+            // Apply both the context filter and the specific date logic for this fragment
+            List<Task> filteredTasks = newcards.stream()
+                    .filter(task -> currentFilter == null || task.tag() == currentFilter) // Context filtering logic
+                    // Add here any additional filtering specific to this fragment, e.g., date-based filtering
+                    .collect(Collectors.toList());
+
             adapter.clear();
-            adapter.addAll(new ArrayList<>(newcards)); // remember the mutable copy here!
+            adapter.addAll(new ArrayList<>(filteredTasks)); // remember the mutable copy here!
             adapter.notifyDataSetChanged();
         });
     }

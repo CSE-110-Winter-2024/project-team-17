@@ -149,6 +149,12 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
         return id;
     }
 
-
+    // US5 start
+    public void updateTasks(List<Task> newTasks) {
+        clear();
+        addAll(newTasks); // This should work correctly given TaskListAdapter extends ArrayAdapter<Task>
+        notifyDataSetChanged();
+    }
+    // US5 end
 
 }

@@ -19,10 +19,13 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.format.DateTimeFormatter;
+import java.util.stream.Collectors;
 
 import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.databinding.TasksFragmentBinding;
 import edu.ucsd.cse110.successorator.R;
+import edu.ucsd.cse110.successorator.lib.domain.Task;
+import edu.ucsd.cse110.successorator.lib.util.Observer;
 import edu.ucsd.cse110.successorator.ui.tasklist.dialog.CreateTaskDialogFragment;
 
 public class TaskListFragment extends  Fragment{
@@ -59,6 +62,7 @@ public class TaskListFragment extends  Fragment{
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // US5 start
         // Initialize the Model
         var modelOwner = requireActivity();
         var modelFactory = ViewModelProvider.Factory.from(MainViewModel.initializer);
@@ -71,48 +75,40 @@ public class TaskListFragment extends  Fragment{
             var dialogFragment = ConfirmDeleteCardDialogFragment.newInstance(id);
             dialogFragment.show(getParentFragmentManager(), "ConfirmDeleteCardDialogFragment");
         }*/);
+
+        // Observe changes in the filtered tasks
+        activityModel.getFilteredTasks().observe(cards -> {
+            var newcards = cards;
+
+            if (newcards == null) return;
+
+            Character currentFilter = activityModel.getContextFilter().getValue();
+            // Apply both the context filter and the specific date logic for this fragment
+            List<Task> filteredTasks = newcards.stream()
+                    .filter(task -> currentFilter == null || task.tag() == currentFilter) // Context filtering logic
+                    // Add here any additional filtering specific to this fragment, e.g., date-based filtering
+                    .collect(Collectors.toList());
+
+            adapter.clear();
+            adapter.addAll(new ArrayList<>(filteredTasks)); // remember the mutable copy here!
+            adapter.notifyDataSetChanged();
+        });
+        // US5 end
+
         activityModel.getOrderedCards().observe(cards -> {
             var newcards = cards;
-            //Determine the current date as a string
-//            LocalDateTime currentDateTime = LocalDateTime.now();
-//            int year = currentDateTime.getYear();
-//            int month = currentDateTime.getMonthValue(); // Month value is 1-based
-//            int dayOfMonth = currentDateTime.getDayOfMonth();
-//            DayOfWeek dayOfWeek = currentDateTime.getDayOfWeek();
-//            // You can then use the DayOfWeek enum directly, or you can get its value as an int if needed
-//            int dayOfWeekValue = dayOfWeek.getValue(); // Monday is 1, Sunday is 7
-//            String dayOfWeekName = dayOfWeek.toString();
-//
-//            int[] dateArray = new int[4];
-//            dateArray[0] = dayOfWeekValue;
-//            dateArray[1] = month;
-//            dateArray[2] = dayOfMonth;
-//            dateArray[3] = year;
-//            String monthStr;
-//            if (month < 10) {
-//                monthStr = "0" + Integer.toString(month);
-//            }
-//            else {
-//                monthStr = Integer.toString(month);
-//            }
-//            String dayStr;
-//            if (dayOfMonth < 10) {
-//                dayStr = "0" + Integer.toString(dayOfMonth);
-//            }
-//            else {
-//                dayStr = Integer.toString(dayOfMonth);
-//            }
-//            String nowDate = Integer.toString(dayOfWeekValue) + monthStr + dayStr + Integer.toString(year);
-//            for (int i = 0; i < newcards.size(); i++) {
-//                //Extract the date from cards
-//                String currDate = newcards.get(i).currOccurDate();
-//                if (nowDate.compareTo(currDate) != 0) {
-//                    newcards.remove(i);
-//                }
-//            }
+
             if (newcards == null) return;
+
+            Character currentFilter = activityModel.getContextFilter().getValue();
+            // Apply both the context filter and the specific date logic for this fragment
+            List<Task> filteredTasks = newcards.stream()
+                    .filter(task -> currentFilter == null || task.tag() == currentFilter) // Context filtering logic
+                    // Add here any additional filtering specific to this fragment, e.g., date-based filtering
+                    .collect(Collectors.toList());
+
             adapter.clear();
-            adapter.addAll(new ArrayList<>(newcards)); // remember the mutable copy here!
+            adapter.addAll(new ArrayList<>(filteredTasks)); // remember the mutable copy here!
             adapter.notifyDataSetChanged();
         });
     }
@@ -143,13 +139,13 @@ public class TaskListFragment extends  Fragment{
                 //TODO: When creating item must use the getOffsetTime due to Advance time
                 activityModel.getOffSetTime().plusDays(1).format(formatter), "Pending","Recurring"};
 
-        if(LocalDateTime.now() != activityModel.getTime().getValue()){
-            //activityModel.removeFinished();
-            activityModel.timeSet(LocalDateTime.now());
-            String[] newItem = {activityModel.getTime().getValue().format(formatter),
-                    activityModel.getOffSetTime().plusDays(1).format(formatter), "Pending","Recurring"};
-            item = newItem;
-        }
+//        if(LocalDateTime.now() != activityModel.getTime().getValue()){
+//            //activityModel.removeFinished();
+//            activityModel.timeSet(LocalDateTime.now());
+//            String[] newItem = {activityModel.getTime().getValue().format(formatter),
+//                    activityModel.getOffSetTime().plusDays(1).format(formatter), "Pending","Recurring"};
+//            item = newItem;
+//        }
         updateTime();
 
 
