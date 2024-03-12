@@ -130,13 +130,13 @@ public class MainViewModel extends ViewModel{
     public void timeAdvance(){
         //time.setValue(time.getValue().plusDays(timeOffset));
         //timeRepo.setDateTime(time.getValue().plusDays(timeOffset));
-        time.setValue(time.getValue().plusDays(timeOffset));
+        timeRepo.setDateTime(time.getValue().plusDays(timeOffset));
         timeAdvCnt++;
         deleteFinished();
     }
 
     public LocalDateTime getOffSetTime(){
-        return time.getValue().plusDays(timeAdvCnt);
+        return time.getValue();
     }
 
     public int getTimeAdvCnt(){
