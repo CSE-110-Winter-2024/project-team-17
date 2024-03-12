@@ -136,7 +136,7 @@ public class MainViewModel extends ViewModel{
     }
 
     public LocalDateTime getOffSetTime(){
-        return this.time.getValue();
+        return timeRepo.getDateTime();
     }
 
     public int getTimeAdvCnt(){
