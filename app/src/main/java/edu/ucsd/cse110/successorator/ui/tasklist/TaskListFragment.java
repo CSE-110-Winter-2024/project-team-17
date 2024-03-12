@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,9 +72,47 @@ public class TaskListFragment extends  Fragment{
             dialogFragment.show(getParentFragmentManager(), "ConfirmDeleteCardDialogFragment");
         }*/);
         activityModel.getOrderedCards().observe(cards -> {
-            if (cards == null) return;
+            var newcards = cards;
+            //Determine the current date as a string
+//            LocalDateTime currentDateTime = LocalDateTime.now();
+//            int year = currentDateTime.getYear();
+//            int month = currentDateTime.getMonthValue(); // Month value is 1-based
+//            int dayOfMonth = currentDateTime.getDayOfMonth();
+//            DayOfWeek dayOfWeek = currentDateTime.getDayOfWeek();
+//            // You can then use the DayOfWeek enum directly, or you can get its value as an int if needed
+//            int dayOfWeekValue = dayOfWeek.getValue(); // Monday is 1, Sunday is 7
+//            String dayOfWeekName = dayOfWeek.toString();
+//
+//            int[] dateArray = new int[4];
+//            dateArray[0] = dayOfWeekValue;
+//            dateArray[1] = month;
+//            dateArray[2] = dayOfMonth;
+//            dateArray[3] = year;
+//            String monthStr;
+//            if (month < 10) {
+//                monthStr = "0" + Integer.toString(month);
+//            }
+//            else {
+//                monthStr = Integer.toString(month);
+//            }
+//            String dayStr;
+//            if (dayOfMonth < 10) {
+//                dayStr = "0" + Integer.toString(dayOfMonth);
+//            }
+//            else {
+//                dayStr = Integer.toString(dayOfMonth);
+//            }
+//            String nowDate = Integer.toString(dayOfWeekValue) + monthStr + dayStr + Integer.toString(year);
+//            for (int i = 0; i < newcards.size(); i++) {
+//                //Extract the date from cards
+//                String currDate = newcards.get(i).currOccurDate();
+//                if (nowDate.compareTo(currDate) != 0) {
+//                    newcards.remove(i);
+//                }
+//            }
+            if (newcards == null) return;
             adapter.clear();
-            adapter.addAll(new ArrayList<>(cards)); // remember the mutable copy here!
+            adapter.addAll(new ArrayList<>(newcards)); // remember the mutable copy here!
             adapter.notifyDataSetChanged();
         });
     }
@@ -82,9 +121,6 @@ public class TaskListFragment extends  Fragment{
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         this.view = TasksFragmentBinding.inflate(inflater, container, false);
-
-
-
 
         // Set the adapter on the ListView
         view.listView.setAdapter(adapter);
@@ -103,6 +139,17 @@ public class TaskListFragment extends  Fragment{
             //activityModel.removeFinished();
             activityModel.timeSet(LocalDateTime.now());
         }*/
+        String[] item = {activityModel.getTime().getValue().format(formatter),
+                //TODO: When creating item must use the getOffsetTime due to Advance time
+                activityModel.getOffSetTime().plusDays(1).format(formatter), "Pending","Recurring"};
+
+//        if(LocalDateTime.now() != activityModel.getTime().getValue()){
+//            //activityModel.removeFinished();
+//            activityModel.timeSet(LocalDateTime.now());
+//            String[] newItem = {activityModel.getTime().getValue().format(formatter),
+//                    activityModel.getOffSetTime().plusDays(1).format(formatter), "Pending","Recurring"};
+//            item = newItem;
+//        }
         updateTime();
 
 
@@ -124,8 +171,8 @@ public class TaskListFragment extends  Fragment{
         //newly Added
         activityModel.getTime().observe(dates -> {
             if( dates == null) return;
-            formattedDateTime = activityModel.getOffSetTime().format(formatter);
-            formattedTmrDateTime = activityModel.getOffSetTime().plusDays(1).format(formatter);
+            formattedDateTime = activityModel.getTime().getValue().format(formatter);
+            formattedTmrDateTime = activityModel.getTime().getValue().plusDays(1).format(formatter);
             daysItems[0] = "Today "+formattedDateTime;
             daysItems[1] = "Tmr "+formattedTmrDateTime;
             spinner.setAdapter(daysadapter);
@@ -153,14 +200,6 @@ public class TaskListFragment extends  Fragment{
                 // Handle no selection
             }
         });
-
-
-
-
-
-
-
-
         return view.getRoot();
     }
 
@@ -173,22 +212,19 @@ public class TaskListFragment extends  Fragment{
                 LocalDateTime now = LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt());
 
                 if(now.getYear() != activityModel.getTime().getValue().getYear()) {
-                    activityModel.timeSet(LocalDateTime.now());
-                    activityModel.removeFinished();
+
+                    activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
+                    //activityModel.removeFinished();
                 }
                 if(now.getMonth() != activityModel.getTime().getValue().getMonth()) {
-                    activityModel.timeSet(LocalDateTime.now());
-                    activityModel.removeFinished();
+                    activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
+                    //activityModel.removeFinished();
                 }
                 if(now.getDayOfMonth() != activityModel.getTime().getValue().getDayOfMonth()){
-                    activityModel.timeSet(LocalDateTime.now());
-                    activityModel.removeFinished();
-                    //TODO: Commented out the 2am restraint for simplicity
-                    /*if(now.getDayOfMonth() != activityModel.getTime().getValue().getDayOfMonth()+1 &&
-                            now.getHour() > 2) {
-                        activityModel.timeSet(LocalDateTime.now());
-                        activityModel.removeFinished();
-                    }*/
+                    activityModel.getTime().getValue();
+                    activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
+                    //activityModel.removeFinished();
+                    //activityModel.removeFinished();
                 }
 
                 // Call this method again after 1 second

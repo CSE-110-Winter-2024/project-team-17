@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -22,8 +23,8 @@ import java.util.List;
 
 import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.databinding.TmrTasksFragmentBinding;
+import edu.ucsd.cse110.successorator.lib.domain.Task;
 import edu.ucsd.cse110.successorator.ui.tasklist.dialog.CreateTomorrowTaskDialogFragment;
-
 
 public class TomorrowListFragment extends  Fragment{
 
@@ -80,9 +81,44 @@ public class TomorrowListFragment extends  Fragment{
             dialogFragment.show(getParentFragmentManager(), "ConfirmDeleteCardDialogFragment");
         }*/);
         activityModel.getOrderedCards().observe(cards -> {
-            var newcards = cards;
-            for(int i = 0; i < newcards.size(); i++) {
-                if(newcards.get(i).taskName().equals("A")){
+
+            //Determine the current date as a string
+            LocalDateTime currentDateTime = LocalDateTime.now();
+            LocalDateTime tomorrowDateTime = currentDateTime.plusDays(1);
+            int year = tomorrowDateTime.getYear();
+            int month = tomorrowDateTime.getMonthValue(); // Month value is 1-based
+            int dayOfMonth = tomorrowDateTime.getDayOfMonth();
+            DayOfWeek dayOfWeek = tomorrowDateTime.getDayOfWeek();
+            // You can then use the DayOfWeek enum directly, or you can get its value as an int if needed
+            int dayOfWeekValue = dayOfWeek.getValue(); // Monday is 1, Sunday is 7
+            String dayOfWeekName = dayOfWeek.toString();
+
+            int[] dateArray = new int[4];
+            dateArray[0] = dayOfWeekValue;
+            dateArray[1] = month;
+            dateArray[2] = dayOfMonth;
+            dateArray[3] = year;
+            String monthStr;
+            if (month < 10) {
+                monthStr = "0" + Integer.toString(month);
+            }
+            else {
+                monthStr = Integer.toString(month);
+            }
+            String dayStr;
+            if (dayOfMonth < 10) {
+                dayStr = "0" + Integer.toString(dayOfMonth);
+            }
+            else {
+                dayStr = Integer.toString(dayOfMonth);
+            }
+            String nowDate = Integer.toString(dayOfWeekValue) + monthStr + dayStr + Integer.toString(year);
+            List<Task> newcards = new ArrayList<Task>(cards);
+
+            for (int i = 0; i < newcards.size(); i++) {
+                //Extract the date from cards
+                String currDate = newcards.get(i).currOccurDate();
+                if (nowDate.compareTo(currDate) != 0) {
                     newcards.remove(i);
                 }
             }
@@ -107,15 +143,15 @@ public class TomorrowListFragment extends  Fragment{
         });
         String[] item = {activityModel.getTime().getValue().format(formatter),
                 //TODO: When creating item must use the getOffsetTime due to Advance time
-                activityModel.getOffSetTime().plusDays(1).format(formatter), "Pending","Recurring"};
+                activityModel.getTime().getValue().plusDays(1).format(formatter), "Pending","Recurring"};
 
-        if(LocalDateTime.now() != activityModel.getTime().getValue()){
+        /*if(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()) != activityModel.getTime().getValue()){
             //activityModel.removeFinished();
             activityModel.timeSet(LocalDateTime.now());
             String[] newItem = {activityModel.getTime().getValue().format(formatter),
-                    activityModel.getOffSetTime().plusDays(1).format(formatter), "Pending","Recurring"};
+                    activityModel.getTime().getValue().plusDays(1).format(formatter), "Pending","Recurring"};
             item = newItem;
-        }
+        }*/
         updateTime();
 
 
@@ -137,8 +173,8 @@ public class TomorrowListFragment extends  Fragment{
         activityModel.getTime().observe(dates -> {
             if( dates == null) return;
             //TODO: Change to get OffsetTime so tthe time change when change list
-            formattedDateTime = activityModel.getOffSetTime().format(formatter);
-            formattedTmrDateTime = activityModel.getOffSetTime().plusDays(1).format(formatter);
+            formattedDateTime = activityModel.getTime().getValue().format(formatter);
+            formattedTmrDateTime = activityModel.getTime().getValue().plusDays(1).format(formatter);
             daysItems[0] = "Today "+formattedDateTime;
             daysItems[1] = "Tmr "+formattedTmrDateTime;
             spinner.setAdapter(daysadapter);
@@ -168,12 +204,6 @@ public class TomorrowListFragment extends  Fragment{
         });
 
 
-
-
-
-
-
-
         return view.getRoot();
     }
 
@@ -184,22 +214,26 @@ public class TomorrowListFragment extends  Fragment{
             public void run() {
                 //TODO: need to fix the bug of offset time, as the removing task is still unknown for now
 
-                if(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()+1).getYear() != activityModel.getOffSetTime().plusDays(1).getYear()) {
-                    activityModel.timeSet(LocalDateTime.now());
-                    //activityModel.removeFinished();
+                LocalDateTime now = LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt());
+
+                if(now.getYear() != activityModel.getTime().getValue().getYear()) {
+                    activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
+                    activityModel.removeFinished();
                 }
-                if(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()).getMonth() != activityModel.getOffSetTime().plusDays(1).getMonth()) {
-                    activityModel.timeSet(LocalDateTime.now());
-                    //activityModel.removeFinished();
+                if(now.getMonth() != activityModel.getTime().getValue().getMonth()) {
+                    activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
+                    activityModel.removeFinished();
                 }
-                if(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()+1).getDayOfMonth() != activityModel.getOffSetTime().plusDays(1).getDayOfMonth()){
-                    activityModel.timeSet(LocalDateTime.now());
-                    //activityModel.removeFinished();
-                    /*if(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()+1).getDayOfMonth() != activityModel.getOffSetTime().plusDays(1).getDayOfMonth()+1 &&
-                            LocalDateTime.now().getHour() > 2) {
+                if(now.getDayOfMonth() != activityModel.getTime().getValue().getDayOfMonth()){
+                    activityModel.getTime().getValue();
+                    activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
+                    activityModel.removeFinished();
+                    //TODO: Commented out the 2am restraint for simplicity
+                    if(now.getDayOfMonth() != activityModel.getTime().getValue().getDayOfMonth()+1 &&
+                            now.getHour() > 2) {
                         activityModel.timeSet(LocalDateTime.now());
-                        //activityModel.removeFinished();
-                    }*/
+                        activityModel.removeFinished();
+                    }
                 }
 
                 // Call this method again after 1 second
