@@ -86,13 +86,28 @@ public class RecurringListFragment extends  Fragment{
         }*/);
 
         // Observe changes in the filtered tasks
-        activityModel.getFilteredTasks().observe(new Observer<List<Task>>() {
-            @Override
-            public void onChanged(List<Task> newTasks) {
-                if (newTasks != null) {
-                    adapter.updateTasks(newTasks);
+        activityModel.getFilteredTasks().observe(cards -> {
+            List<Task> newcards = new ArrayList<Task>(cards);
+
+            for (int i = 0; i < newcards.size(); i++) {
+                //Extract the date from cards
+
+                if (newcards.get(i).frequency() == 0) {
+                    newcards.remove(i);
                 }
             }
+            if (newcards == null) return;
+
+            Character currentFilter = activityModel.getContextFilter().getValue();
+            // Apply both the context filter and the specific date logic for this fragment
+            List<Task> filteredTasks = newcards.stream()
+                    .filter(task -> currentFilter == null || task.tag() == currentFilter) // Context filtering logic
+                    // Add here any additional filtering specific to this fragment, e.g., date-based filtering
+                    .collect(Collectors.toList());
+
+            adapter.clear();
+            adapter.addAll(new ArrayList<>(filteredTasks)); // remember the mutable copy here!
+            adapter.notifyDataSetChanged();
         });
 
 
