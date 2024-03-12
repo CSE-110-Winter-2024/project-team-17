@@ -107,15 +107,15 @@ public class TomorrowListFragment extends  Fragment{
         });
         String[] item = {activityModel.getTime().getValue().format(formatter),
                 //TODO: When creating item must use the getOffsetTime due to Advance time
-                activityModel.getOffSetTime().plusDays(1).format(formatter), "Pending","Recurring"};
+                activityModel.getTime().getValue().plusDays(1).format(formatter), "Pending","Recurring"};
 
-        if(LocalDateTime.now() != activityModel.getTime().getValue()){
+        /*if(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()) != activityModel.getTime().getValue()){
             //activityModel.removeFinished();
             activityModel.timeSet(LocalDateTime.now());
             String[] newItem = {activityModel.getTime().getValue().format(formatter),
-                    activityModel.getOffSetTime().plusDays(1).format(formatter), "Pending","Recurring"};
+                    activityModel.getTime().getValue().plusDays(1).format(formatter), "Pending","Recurring"};
             item = newItem;
-        }
+        }*/
         updateTime();
 
 
@@ -137,8 +137,8 @@ public class TomorrowListFragment extends  Fragment{
         activityModel.getTime().observe(dates -> {
             if( dates == null) return;
             //TODO: Change to get OffsetTime so tthe time change when change list
-            formattedDateTime = activityModel.getOffSetTime().format(formatter);
-            formattedTmrDateTime = activityModel.getOffSetTime().plusDays(1).format(formatter);
+            formattedDateTime = activityModel.getTime().getValue().format(formatter);
+            formattedTmrDateTime = activityModel.getTime().getValue().plusDays(1).format(formatter);
             daysItems[0] = "Today "+formattedDateTime;
             daysItems[1] = "Tmr "+formattedTmrDateTime;
             spinner.setAdapter(daysadapter);
@@ -184,22 +184,26 @@ public class TomorrowListFragment extends  Fragment{
             public void run() {
                 //TODO: need to fix the bug of offset time, as the removing task is still unknown for now
 
-                if(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()+1).getYear() != activityModel.getOffSetTime().plusDays(1).getYear()) {
-                    activityModel.timeSet(LocalDateTime.now());
-                    //activityModel.removeFinished();
+                LocalDateTime now = LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt());
+
+                if(now.getYear() != activityModel.getTime().getValue().getYear()) {
+                    activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
+                    activityModel.removeFinished();
                 }
-                if(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()).getMonth() != activityModel.getOffSetTime().plusDays(1).getMonth()) {
-                    activityModel.timeSet(LocalDateTime.now());
-                    //activityModel.removeFinished();
+                if(now.getMonth() != activityModel.getTime().getValue().getMonth()) {
+                    activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
+                    activityModel.removeFinished();
                 }
-                if(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()+1).getDayOfMonth() != activityModel.getOffSetTime().plusDays(1).getDayOfMonth()){
-                    activityModel.timeSet(LocalDateTime.now());
-                    //activityModel.removeFinished();
-                    /*if(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()+1).getDayOfMonth() != activityModel.getOffSetTime().plusDays(1).getDayOfMonth()+1 &&
-                            LocalDateTime.now().getHour() > 2) {
+                if(now.getDayOfMonth() != activityModel.getTime().getValue().getDayOfMonth()){
+                    activityModel.getTime().getValue();
+                    activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
+                    activityModel.removeFinished();
+                    //TODO: Commented out the 2am restraint for simplicity
+                    if(now.getDayOfMonth() != activityModel.getTime().getValue().getDayOfMonth()+1 &&
+                            now.getHour() > 2) {
                         activityModel.timeSet(LocalDateTime.now());
-                        //activityModel.removeFinished();
-                    }*/
+                        activityModel.removeFinished();
+                    }
                 }
 
                 // Call this method again after 1 second
