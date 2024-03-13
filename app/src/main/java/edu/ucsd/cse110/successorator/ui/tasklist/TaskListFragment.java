@@ -149,13 +149,13 @@ public class TaskListFragment extends  Fragment{
                 //TODO: When creating item must use the getOffsetTime due to Advance time
                 activityModel.getOffSetTime().plusDays(1).format(formatter), "Pending","Recurring"};
 
-        if(LocalDateTime.now() != activityModel.getTime().getValue()){
-            //activityModel.removeFinished();
-            activityModel.timeSet(LocalDateTime.now());
-            String[] newItem = {activityModel.getTime().getValue().format(formatter),
-                    activityModel.getOffSetTime().plusDays(1).format(formatter), "Pending","Recurring"};
-            item = newItem;
-        }
+//        if(LocalDateTime.now() != activityModel.getTime().getValue()){
+//            //activityModel.removeFinished();
+//            activityModel.timeSet(LocalDateTime.now());
+//            String[] newItem = {activityModel.getTime().getValue().format(formatter),
+//                    activityModel.getOffSetTime().plusDays(1).format(formatter), "Pending","Recurring"};
+//            item = newItem;
+//        }
         updateTime();
 
 
@@ -219,10 +219,12 @@ public class TaskListFragment extends  Fragment{
 
                 if(now.getYear() != activityModel.getTime().getValue().getYear()) {
                     activityModel.timeSet(LocalDateTime.now());
+                    activityModel.updateRecurrence();
                     //activityModel.removeFinished();
                 }
                 if(now.getMonth() != activityModel.getTime().getValue().getMonth()) {
                     activityModel.timeSet(LocalDateTime.now());
+                    activityModel.updateRecurrence();
                     //activityModel.removeFinished();
                 }
                 if(now.getDayOfMonth() != activityModel.getTime().getValue().getDayOfMonth()){
@@ -234,6 +236,8 @@ public class TaskListFragment extends  Fragment{
                         activityModel.timeSet(LocalDateTime.now());
                         activityModel.removeFinished();
                     }*/
+                    //I'll call the for loop to update all tasks in here
+                    activityModel.updateRecurrence();
                 }
 
                 // Call this method again after 1 second

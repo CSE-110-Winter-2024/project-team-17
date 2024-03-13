@@ -113,6 +113,16 @@ public class MainViewModel extends ViewModel{
         }
     }
 
+    public void updateRecurrence() {
+        var tasks = this.orderedCards.getValue();
+        if(tasks == null) {
+            return;
+        }
+        for (int i = 0; i <tasks.size(); i++) {
+            tasks.get(i).updateRecurrence();
+        }
+    }
+
     public void removeFinished() {
         taskRepository.removeFinished();
     }
