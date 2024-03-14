@@ -94,25 +94,24 @@ public class TomorrowListAdapter extends ArrayAdapter<Task> {
         if(!task.finished()){
             binding.textView2.setPaintFlags(0);
         }else{
-            binding.textView2.setPaintFlags(
-                    binding.textView2.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            /*binding.textView2.setPaintFlags(
+                    binding.textView2.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);*/
         }
         binding.textView2.setOnClickListener(v -> {
 
 
-            if(task.frequency()==1){
+            if(task.frequency()==1 && task.finished() == false){
                 Toast.makeText(getContext(), "This goal is still active for Today. If you've finished this goal for Today, mark it finished in that view", Toast.LENGTH_SHORT).show();
-            }
-            task.flipFinished();
-            if(!task.finished()){
-                binding.textView2.setPaintFlags(0);
             }else{
-                binding.textView2.setPaintFlags(
-                        binding.textView2.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                task.flipFinished();
+                if(!task.finished()){
+                    binding.textView2.setPaintFlags(0);
+                }else{
+                    binding.textView2.setPaintFlags(
+                            binding.textView2.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                }
+                activityModel.reorder(task);
             }
-
-
-            activityModel.reorder(task);
 
             //not sure to use or not yet.
             /*var id = task.id();

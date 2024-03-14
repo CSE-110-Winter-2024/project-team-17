@@ -83,8 +83,9 @@ public class TomorrowListFragment extends  Fragment{
         }*/);
 
         activityModel.getFilteredTasks().observe(cards -> {
+            if(cards == null) return;
             //Determine the current date as a string
-            LocalDateTime currentDateTime = LocalDateTime.now();
+            LocalDateTime currentDateTime = LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt());
             LocalDateTime tomorrowDateTime = currentDateTime.plusDays(1);
             int year = tomorrowDateTime.getYear();
             int month = tomorrowDateTime.getMonthValue(); // Month value is 1-based
@@ -148,9 +149,12 @@ public class TomorrowListFragment extends  Fragment{
 
 
         activityModel.getOrderedCards().observe(cards -> {
+            if(cards == null){
+                return;
+            }
 
             //Determine the current date as a string
-            LocalDateTime currentDateTime = LocalDateTime.now();
+            LocalDateTime currentDateTime = LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt());
             LocalDateTime tomorrowDateTime = currentDateTime.plusDays(1);
             int year = tomorrowDateTime.getYear();
             int month = tomorrowDateTime.getMonthValue(); // Month value is 1-based
@@ -184,20 +188,24 @@ public class TomorrowListFragment extends  Fragment{
                 return;
             }
             List<Task> newcards = new ArrayList<Task>(cards);
+            List<Task> newcards2 = new ArrayList<>();
 
             for (int i = 0; i < newcards.size(); i++) {
                 //Extract the date from cards
                 String occurDate = newcards.get(i).currOccurDate();
-                if (tmrDate.compareTo(occurDate) != 0 && newcards.get(i).frequency() != 1) {
-                    newcards.remove(i);
+                if(occurDate != null) {
+                    if (tmrDate.compareTo(occurDate) != 0 && newcards.get(i).frequency() != 1) {
+                    }else{
+                        newcards2.add(newcards.get(i));
+                    }
                 }
             }
-            if (newcards == null) return;
+            if (newcards2 == null) return;
 
             Character currentFilter = activityModel.getContextFilter().getValue();
 
             // Apply both the context filter and the specific date logic for this fragment
-            List<Task> filteredTasks = newcards.stream()
+            List<Task> filteredTasks = newcards2.stream()
                     .filter(task -> currentFilter == null || task.tag() == currentFilter) // Context filtering logic
                     // Add here any additional filtering specific to this fragment, e.g., date-based filtering
                     .collect(Collectors.toList());

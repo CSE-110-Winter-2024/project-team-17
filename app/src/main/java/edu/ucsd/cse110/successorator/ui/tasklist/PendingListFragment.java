@@ -86,6 +86,9 @@ public class PendingListFragment extends  Fragment{
 
         // Observe changes in the filtered tasks
         activityModel.getFilteredTasks().observe(cards -> {
+            if(cards == null){
+                return;
+            }
             List<Task> newcards = new ArrayList<Task>(cards);
             for (int i = 0; i < newcards.size(); i++) {
                 //Extract the date from cards
@@ -113,19 +116,19 @@ public class PendingListFragment extends  Fragment{
                 return;
             }
             List<Task> newcards = new ArrayList<Task>(cards);
+            List<Task> newcards2 = new ArrayList<>();
             for (int i = 0; i < newcards.size(); i++) {
-                //Extract the date from cards
-                String currDate = newcards.get(i).currOccurDate();
-                if (newcards.get(i).finished()) {
-                    newcards.remove(i);
+                if(newcards.get(i).addedDate() != null) {
+                }else{
+                    newcards2.add(newcards.get(i));
                 }
             }
 
-            if (newcards == null) return;
+            if (newcards2 == null) return;
 
             Character currentFilter = activityModel.getContextFilter().getValue();
             // Apply both the context filter and the specific date logic for this fragment
-            List<Task> filteredTasks = newcards.stream()
+            List<Task> filteredTasks = newcards2.stream()
                     .filter(task -> currentFilter == null || task.tag() == currentFilter) // Context filtering logic
                     // Add here any additional filtering specific to this fragment, e.g., date-based filtering
                     .collect(Collectors.toList());

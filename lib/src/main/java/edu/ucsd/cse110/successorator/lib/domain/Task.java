@@ -41,10 +41,21 @@ public class Task {
         this.addedDate = addedDate;
         this.frequency = frequency;
         this.tag = tag;
-        this.currOccurDate = new String(addedDate);
+        if(addedDate == null){
+            this.currOccurDate = null;
+        }else{
+            this.currOccurDate = new String(addedDate);
+        }
         this.nextOccurDate = null;
-        calculateRecurrence(); //nextOccurDate should be set
+        if(this.frequency != 0){
+            //calculateRecurrence(); //nextOccurDate should be set
+        }
     }
+
+    public void setAddedDate(String dateString){
+        this.addedDate = dateString;
+    }
+
 
     public @Nullable Integer id() {
         return id;
@@ -83,27 +94,27 @@ public class Task {
         return new Task(this.id, this.taskName, this.sortOrder, finished, this.addedDate, this.frequency, this.tag);
     }
 
-    public void updateRecurrence() {
+    public void updateRecurrence(int adv) {
         //Todays date in the string format
         //Can call this to update currOccurDate and nextOccurDate?
         //We will set if the task is unfinished, curroccurdate just rolls over to the next day, while we will calculate the next supposed occurdate and e
         //Set that to nextOccurdate
-        LocalDateTime currentDateTime = LocalDateTime.now();
+        LocalDateTime currentDateTime = LocalDateTime.now().plusDays(adv);
         LocalDateTime previousDateTime = currentDateTime.minusDays(1);
 
-        LocalDate currentDate = LocalDate.now();
+        LocalDate currentDate = LocalDate.now().plusDays(adv);
         String originalDate = this.addedDate;
         String prevDateString = dateToString(previousDateTime);
         int originalDayOfWeek = (int)(originalDate.charAt(0));
 
         //This is for the case when we are not supposed to calculate the new occurence date, but we need to
         //Account for the rollover to new date if the task is unfinished
-        if (!prevDateString.equals(this.nextOccurDate)) { //If its the same, then we know its time to update
+        /*if (!prevDateString.equals(this.nextOccurDate)) { //If its the same, then we know its time to update
             if (!this.finished) {
                 this.currOccurDate = dateToString(currentDateTime);
             }
             return;
-        }
+        }*/
         // Get the first day of the month
         LocalDate nextMonthDate = currentDate.plusMonths(1);
         LocalDate firstDayOfNextMonth = nextMonthDate.withDayOfMonth(1);
@@ -116,7 +127,9 @@ public class Task {
         if (this.frequency == 0) {
             //No recurrence
             //Delete the task if finished otherwise turn over to next day
-            this.currOccurDate = dateToString(currentDateTime);
+            if(!finished){
+                this.currOccurDate = dateToString(currentDateTime);
+            }
             return;
         }
         else if (this.frequency < 0) { //Monthly recurrence
@@ -188,45 +201,63 @@ public class Task {
 
         }
         else if (this.frequency == 1) {
+            if(this.finished){
+                this.finished = false;
+                this.currOccurDate = dateToString(currentDateTime);
+            }else{
+                this.currOccurDate = dateToString(currentDateTime);
+            }
             //Daily recurrence
             //Show everyday
-            String newOccurDate = dateToString(currentDateTime);
-            this.nextOccurDate = newOccurDate;
+
 
         }
         else if (this.frequency == 7) {
+            if(finished){
+                this.finished = false;
+                this.currOccurDate = this.nextOccurDate;
+            }else{
+                this.currOccurDate = dateToString(currentDateTime);
+                if(this.currOccurDate == this.nextOccurDate){
+                    LocalDateTime oneWeekLater = previousDateTime.plusWeeks(1);
+                    int newWeekDay = oneWeekLater.getDayOfWeek().getValue();
+                    int newMonth = oneWeekLater.getMonthValue();
+                    int newDate = oneWeekLater.getDayOfMonth();
+                    int newYear = oneWeekLater.getYear();
+                    String newOccurDate = Integer.toString(newWeekDay)
+                            + Integer.toString(newMonth) + Integer.toString(newDate) + Integer.toString(newYear);
+                    this.nextOccurDate = newOccurDate;
+                }
+            }
+
             //Weekly
             //LocalDate oneWeekLater = currentDate.plusWeeks(1);
-            LocalDateTime oneWeekLater = previousDateTime.plusWeeks(1);
-            int newWeekDay = oneWeekLater.getDayOfWeek().getValue();
-            int newMonth = oneWeekLater.getMonthValue();
-            int newDate = oneWeekLater.getDayOfMonth();
-            int newYear = oneWeekLater.getYear();
-            String newOccurDate = Integer.toString(newWeekDay)
-                    + Integer.toString(newMonth) + Integer.toString(newDate) + Integer.toString(newYear);
-            this.nextOccurDate = newOccurDate;
         }
 
         //If the task is unfinished then the curroccurdate should just roll over, otherwise it is set to nextoccurdate
-        if (this.finished) {
+        /*if (this.finished) {
             this.currOccurDate = this.nextOccurDate;
-            this.flipFinished();
+            this.finished = false;
         }
         else {
             this.currOccurDate = dateToString(currentDateTime);
-        }
+        }*/
     }
 
     //This is only used to initialize the nextoccurdate when the task is first created
-    public void calculateRecurrence() {
+    public void calculateRecurrence(int i) {
+        if(this.addedDate == null){
+            return;
+        }
         //Todays date in the string format
         //Can call this to update currOccurDate and nextOccurDate?
         //We will set if the task is unfinished, curroccurdate just rolls over to the next day, while we will calculate the next supposed occurdate and e
         //Set that to nextOccurdate
-        LocalDateTime currentDateTime = LocalDateTime.now();
+        LocalDateTime currentDateTime = LocalDateTime.now().plusDays(i);
         LocalDateTime previousDateTime = currentDateTime.minusDays(1);
 
-        LocalDate currentDate = LocalDate.now();
+        LocalDate currentDate = LocalDate.now().plusDays(i);
+
         String originalDate = this.addedDate;
         String prevDateString = dateToString(previousDateTime);
         int originalDayOfWeek = (int)(originalDate.charAt(0));

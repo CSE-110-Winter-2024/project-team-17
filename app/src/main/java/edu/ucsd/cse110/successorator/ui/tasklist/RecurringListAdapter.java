@@ -94,8 +94,8 @@ public class RecurringListAdapter extends ArrayAdapter<Task> {
         if(!task.finished()){
             binding.textView2.setPaintFlags(0);
         }else{
-            binding.textView2.setPaintFlags(
-                    binding.textView2.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+           // binding.textView2.setPaintFlags(
+            //        binding.textView2.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         }
 
         binding.textView2.setOnLongClickListener(v -> {

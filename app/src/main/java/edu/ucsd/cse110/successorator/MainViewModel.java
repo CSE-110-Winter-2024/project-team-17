@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.viewmodel.ViewModelInitializer;
 
+import java.sql.Array;
 import java.sql.Time;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
@@ -137,14 +138,23 @@ public class MainViewModel extends ViewModel {
 
     public void updateRecurrence() {
         var tasks = this.orderedCards.getValue();
+        var tasks2 = new ArrayList<Task>();
         if(tasks == null) {
             return;
         }
         for (int i = 0; i <tasks.size(); i++) {
-            tasks.get(i).updateRecurrence();
+            if(tasks.get(i).finished() && tasks.get(i).frequency() == 0) {
+                taskRepository.remove(tasks.get(i).id());
+            }else{
+                tasks.get(i).updateRecurrence(this.timeAdvCnt);
+                tasks2.add(tasks.get(i));
+            }
         }
-        var newTasks = new ArrayList<>(tasks);
-        taskRepository.save(newTasks);
+        taskRepository.save(tasks2);
+    }
+
+    public void calculateRecurrence(Task task) {
+        task.calculateRecurrence(timeAdvCnt);
     }
 
     public void delete(Task task){
@@ -173,7 +183,7 @@ public class MainViewModel extends ViewModel {
         //timeRepo.setDateTime(time.getValue().plusDays(timeOffset));
         //timeRepo.setDateTime(time.getValue().plusDays(timeOffset));
         timeAdvCnt++;
-        deleteFinished();
+        //deleteFinished();
     }
 
 
@@ -194,7 +204,7 @@ public class MainViewModel extends ViewModel {
 
     // Method to apply filtering and sorting
     private void updateFilteredTasks(List<Task> tasks, Character filter) {
-        if (tasks == null) return;
+        if (tasks.size() == 0) return;
         List<Task> filteredList;
         if (filter == null) {
             filteredList = new ArrayList<>(tasks);

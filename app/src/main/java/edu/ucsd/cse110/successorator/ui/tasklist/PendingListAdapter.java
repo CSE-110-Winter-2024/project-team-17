@@ -94,8 +94,8 @@ public class PendingListAdapter extends ArrayAdapter<Task> {
         if(!task.finished()){
             binding.textView2.setPaintFlags(0);
         }else{
-            binding.textView2.setPaintFlags(
-                    binding.textView2.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            /*binding.textView2.setPaintFlags(
+                    binding.textView2.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);*/
         }
         binding.textView2.setOnLongClickListener(v -> {
 
@@ -112,6 +112,7 @@ public class PendingListAdapter extends ArrayAdapter<Task> {
                     activityModel.test(task);
                 } else if (itemId == R.id.finish_id) {
                     task.flipFinished();
+                    activityModel.setDateforTask(task, 1);
                 } else if (itemId == R.id.delete_id) {
                     if(task.frequency()==0){
                         activityModel.delete(task);

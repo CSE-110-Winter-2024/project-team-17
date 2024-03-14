@@ -121,7 +121,7 @@ public class CreatePendingTaskDialogFragment extends DialogFragment{
         }
         //TODO: Add task context
         String dateString = Integer.toString(dayOfWeekValue) + monthStr + dayStr + Integer.toString(year);
-        var card = new Task(null, front, -1, false, dateString, 0, selectedTag);
+        var card = new Task(null, front, -1, false, null, 0, selectedTag);
         int frequency = -1;
         card.setFrequency(frequency);
         activityModel.add(card);
