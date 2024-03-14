@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.viewmodel.ViewModelInitializer;
 
 import java.sql.Time;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -105,13 +106,17 @@ public class MainViewModel extends ViewModel{
             return;
         }
         for(int i = tasks.size()-1; i>= 0; i--){
-            if(tasks.get(i).finished()){
-                taskRepository.remove(tasks.get(i).id());
-            }else{
-                break;
+            if(tasks.get(i).finished()) {
+                delete(tasks.get(i));
             }
         }
     }
+
+    public void delete(Task task){
+
+        taskRepository.remove(task.id());
+    }
+
 
     public void removeFinished() {
         taskRepository.removeFinished();
@@ -150,5 +155,71 @@ public class MainViewModel extends ViewModel{
         //deleteFinished();
     }
 
+<<<<<<< Updated upstream
+=======
+    // Method to apply filtering and sorting
+    private void updateFilteredTasks(List<Task> tasks, Character filter) {
+        if (tasks == null) return;
+        List<Task> filteredList;
+        if (filter == null) {
+            filteredList = new ArrayList<>(tasks);
+        } else {
+            filteredList = tasks.stream()
+                    .filter(task -> task.tag() == filter)
+                    .sorted(Comparator.comparingInt(Task::sortOrder))
+                    .collect(Collectors.toList());
+        }
+        filteredTasks.setValue(filteredList);
+    }
 
+    public Subject<List<Task>> getFilteredTasks() {
+        return filteredTasks;
+    }
+
+    public MutableLiveData<Character> getContextFilter() {
+        return contextFilter;
+    }
+
+    public void setContextFilter(Character filter) {
+        this.contextFilter.setValue(filter);
+    }
+    public void setDateforTask (Task task,int one){
+>>>>>>> Stashed changes
+
+        String setter = " ";
+
+        //if move to today
+        LocalDateTime current;
+        if(one==1){
+            current  = time.getValue();
+        }
+        //if move to tomorrow
+        else if(one == 0){
+            current  = time.getValue().plusDays(timeOffset);
+        }
+        else{
+            current  = time.getValue().plusDays(timeOffset+timeOffset);
+        }
+        String dayOfWeek = Integer.toString(current.getDayOfWeek().getValue());
+        String date = Integer.toString(current.getDayOfMonth());
+        String year = Integer.toString(current.getYear());
+        String month = Integer.toString(current.getMonthValue());
+
+        setter = dayOfWeek + month + date + year;
+        task.setDate(setter);
+        reorder(task);
+    }
+
+    public void test(Task t){
+        System.out.println(t.currOccurDate());
+    }
+
+    public void deleteTaskRec(Task t, int freq){
+        for(int i=0; i<freq;i++){
+            setDateforTask(t,0);
+        }
+        reorder(t);
+    }
 }
+
+

@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.PopupMenu;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -77,15 +79,21 @@ public class RecurringListAdapter extends ArrayAdapter<Task> {
             binding.textView2.setPaintFlags(
                     binding.textView2.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         }
+
         binding.textView2.setOnLongClickListener(v -> {
-            if(!task.finished()){
-                binding.textView2.setPaintFlags(
-                        binding.textView2.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-            }else{
-                binding.textView2.setPaintFlags(0);
-            }
-            task.flipFinished();
-            //TODO: bug
+            PopupMenu popup = new PopupMenu(getContext(), v);
+            popup.getMenuInflater().inflate(R.menu.recurring_menu, popup.getMenu());
+            popup.setOnMenuItemClickListener(item->{
+                int i = item.getItemId();
+                if(i == R.id.rec_delete_id){
+                    task.setFrequency(0);
+                    activityModel.delete(task);
+                } else{
+                    return false;
+                }
+                return true;
+            });
+            popup.show();
             activityModel.reorder(task);
 
             //not sure to use or not yet.
@@ -97,6 +105,7 @@ public class RecurringListAdapter extends ArrayAdapter<Task> {
 
         return binding.getRoot();
     }
+
 
     @Override
     public boolean hasStableIds() {
