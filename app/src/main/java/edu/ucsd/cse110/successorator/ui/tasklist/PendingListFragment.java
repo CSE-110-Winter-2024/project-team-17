@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import edu.ucsd.cse110.successorator.MainViewModel;
@@ -116,10 +117,11 @@ public class PendingListFragment extends  Fragment{
             for (int i = 0; i < newcards.size(); i++) {
                 //Extract the date from cards
                 String currDate = newcards.get(i).currOccurDate();
-                if (newcards.get(i).finished()) {
-                    newcards.remove(i);
+                if (!newcards.get(i).finished() && newcards.get(i).currOccurDate()!=null) { //NEED TO FIX THE CONDITION FOR THIS
+                    newcards.set(i, null);
                 }
             }
+            newcards.removeIf(Objects::isNull);
 
             if (newcards == null) return;
 
