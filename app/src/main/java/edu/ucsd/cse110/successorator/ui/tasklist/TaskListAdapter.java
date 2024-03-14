@@ -99,6 +99,7 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
                     binding.textView2.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         }
 
+<<<<<<< Updated upstream
 
         binding.textView2.setText(task.taskName());
         binding.textView2.setOnClickListener(v -> {
@@ -131,6 +132,17 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
             });
             popup.show();
             //TODO: bug
+=======
+        binding.textView2.setText(task.taskName());
+        binding.textView2.setOnClickListener(v -> {
+           task.flipFinished();
+            if(!task.finished()){
+                binding.textView2.setPaintFlags(0);
+            }else{
+                binding.textView2.setPaintFlags(
+                        binding.textView2.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            }
+>>>>>>> Stashed changes
             activityModel.reorder(task);
 
             //not sure to use or not yet.

@@ -98,6 +98,7 @@ public class TomorrowListAdapter extends ArrayAdapter<Task> {
                     binding.textView2.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         }
         binding.textView2.setOnClickListener(v -> {
+<<<<<<< Updated upstream
             PopupMenu popup = new PopupMenu(getContext(), v);
             popup.getMenuInflater().inflate(R.menu.menu, popup.getMenu());
 
@@ -126,6 +127,19 @@ public class TomorrowListAdapter extends ArrayAdapter<Task> {
 
             });
             popup.show();
+=======
+            if(task.frequency()==1){
+                Toast.makeText(getContext(), "This goal is still active for Today. If you've finished this goal for Today, mark it finished in that view", Toast.LENGTH_SHORT).show();
+            }
+            task.flipFinished();
+            if(!task.finished()){
+                binding.textView2.setPaintFlags(0);
+            }else{
+                binding.textView2.setPaintFlags(
+                        binding.textView2.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            }
+
+>>>>>>> Stashed changes
             activityModel.reorder(task);
 
             //not sure to use or not yet.

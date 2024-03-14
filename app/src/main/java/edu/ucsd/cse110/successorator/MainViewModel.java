@@ -177,7 +177,6 @@ public class MainViewModel extends ViewModel {
         //deleteFinished();
     }
 
-
     // Method to apply filtering and sorting
     private void updateFilteredTasks(List<Task> tasks, Character filter) {
         if (tasks == null) return;
@@ -193,6 +192,24 @@ public class MainViewModel extends ViewModel {
         filteredTasks.setValue(filteredList);
     }
 
+<<<<<<< Updated upstream
+    // Method to apply filtering and sorting
+    private void updateFilteredTasks(List<Task> tasks, Character filter) {
+        if (tasks == null) return;
+        List<Task> filteredList;
+        if (filter == null) {
+            filteredList = new ArrayList<>(tasks);
+        } else {
+            filteredList = tasks.stream()
+                    .filter(task -> task.tag() == filter)
+                    .sorted(Comparator.comparingInt(Task::sortOrder))
+                    .collect(Collectors.toList());
+        }
+        filteredTasks.setValue(filteredList);
+    }
+
+=======
+>>>>>>> Stashed changes
     public Subject<List<Task>> getFilteredTasks() {
         return filteredTasks;
     }
@@ -204,10 +221,15 @@ public class MainViewModel extends ViewModel {
     public void setContextFilter(Character filter) {
         this.contextFilter.setValue(filter);
     }
+<<<<<<< Updated upstream
 
     public void setDateforTask (Task task,int one){
 
 
+=======
+    public void setDateforTask (Task task,int one){
+
+>>>>>>> Stashed changes
         String setter = " ";
 
         //if move to today
