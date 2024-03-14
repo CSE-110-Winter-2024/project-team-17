@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import edu.ucsd.cse110.successorator.MainViewModel;
@@ -113,26 +114,21 @@ public class TomorrowListFragment extends  Fragment{
             else {
                 dayStr = Integer.toString(dayOfMonth);
             }
-            String nowDate = Integer.toString(dayOfWeekValue) + monthStr + dayStr + Integer.toString(year);
+            String tmrDate = Integer.toString(dayOfWeekValue) + monthStr + dayStr + Integer.toString(year);
             List<Task> newcards = new ArrayList<Task>(cards);
 
-            if (!newcards.isEmpty()) {
-                newcards.remove(0);
-            }
             //THERE IS ERROR HERE TRYING TO FIX!!!
             //UNABLE TO CORRECTLY FILTER OUT TOMORROWS TASKS
-//            for (int i = 0; i < cards.size(); i++) {
-//                //Extract the date from cards
-//
-//                for (int j = 0; j < newcards.size(); j++) {
-//                    String currDate = newcards.get(j).currOccurDate();
-//                    if (nowDate.compareTo(currDate) != 0 && newcards.get(i).frequency() != 1) {
-//                        newcards.remove(j);
-//                        break;
-//                    }
-//                }
-//
-//            }
+            //Trying to fix now
+            for (int i = 0; i < newcards.size(); i++) {
+                //Extract the date from cards
+                String currDate = newcards.get(i).currOccurDate();
+                if (tmrDate.compareTo(currDate) != 0 && newcards.get(i).frequency() != 1) {
+                    newcards.set(i, null);
+                }
+            }
+            newcards.removeIf(Objects::isNull);
+
             if (newcards == null) return;
 
             Character currentFilter = activityModel.getContextFilter().getValue();
@@ -189,11 +185,12 @@ public class TomorrowListFragment extends  Fragment{
 
             for (int i = 0; i < newcards.size(); i++) {
                 //Extract the date from cards
-                String occurDate = newcards.get(i).currOccurDate();
-                if (tmrDate.compareTo(occurDate) != 0 && newcards.get(i).frequency() != 1) {
-                    newcards.remove(i);
+                String currDate = newcards.get(i).currOccurDate();
+                if (tmrDate.compareTo(currDate) != 0 && newcards.get(i).frequency() != 1) {
+                    newcards.set(i, null);
                 }
             }
+            newcards.removeIf(Objects::isNull);
             if (newcards == null) return;
 
             Character currentFilter = activityModel.getContextFilter().getValue();
