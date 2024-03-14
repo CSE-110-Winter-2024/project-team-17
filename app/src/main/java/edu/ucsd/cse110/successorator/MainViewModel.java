@@ -141,7 +141,7 @@ public class MainViewModel extends ViewModel {
             return;
         }
         for (int i = 0; i <tasks.size(); i++) {
-            tasks.get(i).updateRecurrence();
+            tasks.get(i).updateRecurrence(this.timeAdvCnt);
         }
         var newTasks = new ArrayList<>(tasks);
         taskRepository.save(newTasks);
@@ -173,7 +173,7 @@ public class MainViewModel extends ViewModel {
         //timeRepo.setDateTime(time.getValue().plusDays(timeOffset));
         //timeRepo.setDateTime(time.getValue().plusDays(timeOffset));
         timeAdvCnt++;
-        deleteFinished();
+        //deleteFinished();
     }
 
 
@@ -256,6 +256,10 @@ public class MainViewModel extends ViewModel {
             setDateforTask(t,0);
         }
         reorder(t);
+    }
+
+    public void calculateRecurrence(Task card) {
+        card.calculateRecurrence(timeAdvCnt);
     }
 }
 
