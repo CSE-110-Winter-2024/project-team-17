@@ -36,7 +36,7 @@ public class RecurringListFragment extends  Fragment{
     private MainViewModel activityModel;
 
     private RecurringTasksFragmentBinding view;
-    private TaskListAdapter adapter;
+    private RecurringListAdapter adapter;
 
     private ArrayList<String> dateMenu;
 
@@ -80,7 +80,7 @@ public class RecurringListFragment extends  Fragment{
 
         // Initialize the Adapter (with an empty list for now)
         //this.adapter = new CardListAdapter(requireContext(), List.of(), activityModel::remove);
-        this.adapter = new TaskListAdapter(requireContext(), List.of(),activityModel /*, id -> {
+        this.adapter = new RecurringListAdapter(requireContext(), List.of(),activityModel /*, id -> {
             var dialogFragment = ConfirmDeleteCardDialogFragment.newInstance(id);
             dialogFragment.show(getParentFragmentManager(), "ConfirmDeleteCardDialogFragment");
         }*/);

@@ -59,7 +59,7 @@ public class Task {
     }
 
     public void flipFinished() {
-        finished = !finished;
+        this.finished = !finished;
     }
 
     public void setFrequency(int frequency) {
@@ -116,4 +116,8 @@ public class Task {
     public char tag() {
         return this.tag;
     }
+
+    public void setDate(String newDate){ this.currOccurDate = newDate;}
+
+
 }
