@@ -84,6 +84,9 @@ public class TomorrowListFragment extends  Fragment{
         }*/);
 
         activityModel.getFilteredTasks().observe(cards -> {
+            if(cards == null) {
+                return;
+            }
             //Determine the current date as a string
             LocalDateTime currentDateTime = LocalDateTime.now();
             LocalDateTime tomorrowDateTime = currentDateTime.plusDays(1);
@@ -310,12 +313,12 @@ public class TomorrowListFragment extends  Fragment{
                     activityModel.removeFinished();
                     activityModel.updateRecurrence();
                     //TODO: Commented out the 2am restraint for simplicity
-                    if(now.getDayOfMonth() != activityModel.getTime().getValue().getDayOfMonth()+1 &&
+                    /*if(now.getDayOfMonth() != activityModel.getTime().getValue().getDayOfMonth()+1 &&
                             now.getHour() > 2) {
-                        activityModel.timeSet(LocalDateTime.now());
-                        activityModel.removeFinished();
+                        activityModel.timeSet(now);
+                        //activityModel.removeFinished();
                         activityModel.updateRecurrence();
-                    }
+                    }*/
                 }
 
                 // Call this method again after 1 second

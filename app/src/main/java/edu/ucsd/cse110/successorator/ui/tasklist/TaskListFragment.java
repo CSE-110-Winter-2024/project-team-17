@@ -80,6 +80,9 @@ public class TaskListFragment extends  Fragment{
 
         // Observe changes in the filtered tasks
         activityModel.getFilteredTasks().observe(cards -> {
+            if(cards == null) {
+                return;
+            }
             var newcards = cards;
 
             if (newcards == null) return;
@@ -260,15 +263,15 @@ public class TaskListFragment extends  Fragment{
 
                 if(now.getYear() != activityModel.getTime().getValue().getYear()) {
 
-                    activityModel.timeSet(LocalDateTime.now());
+                    activityModel.timeSet(now);
                     activityModel.updateRecurrence();
                     //activityModel.removeFinished();
                 }
                 if(now.getMonth() != activityModel.getTime().getValue().getMonth()) {
-                    activityModel.timeSet(LocalDateTime.now());
+                    activityModel.timeSet(now);
                     activityModel.updateRecurrence();
 
-                    activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
+                    //activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
                     //activityModel.removeFinished();
                 }
                 if(now.getMonth() != activityModel.getTime().getValue().getMonth()) {
@@ -277,8 +280,8 @@ public class TaskListFragment extends  Fragment{
                     //activityModel.removeFinished();
                 }
                 if(now.getDayOfMonth() != activityModel.getTime().getValue().getDayOfMonth()){
-                    activityModel.getTime().getValue();
-                    activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
+                    //activityModel.getTime().getValue();
+                    activityModel.timeSet(now);
                     activityModel.updateRecurrence();
                     //activityModel.removeFinished();
                     //activityModel.removeFinished();

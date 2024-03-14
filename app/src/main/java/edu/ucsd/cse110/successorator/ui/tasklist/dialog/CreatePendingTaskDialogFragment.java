@@ -130,6 +130,7 @@ public class CreatePendingTaskDialogFragment extends DialogFragment{
         var card = new Task(null, front, -1, false, null, 0, selectedTag);
         int frequency = 0;
         card.setFrequency(frequency);
+        activityModel.calculateRecurrence(card);
         activityModel.add(card);
         dialog.dismiss();
     }
