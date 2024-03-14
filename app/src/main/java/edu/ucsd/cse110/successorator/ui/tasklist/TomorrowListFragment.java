@@ -116,7 +116,9 @@ public class TomorrowListFragment extends  Fragment{
             String nowDate = Integer.toString(dayOfWeekValue) + monthStr + dayStr + Integer.toString(year);
             List<Task> newcards = new ArrayList<Task>(cards);
 
-            newcards.remove(0);
+            if (!newcards.isEmpty()) {
+                newcards.remove(0);
+            }
             //THERE IS ERROR HERE TRYING TO FIX!!!
             //UNABLE TO CORRECTLY FILTER OUT TOMORROWS TASKS
 //            for (int i = 0; i < cards.size(); i++) {

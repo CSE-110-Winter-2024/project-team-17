@@ -241,6 +241,9 @@ public class TaskListFragment extends  Fragment{
                 // Handle no selection
             }
         });
+
+        setupObservers();
+
         return view.getRoot();
     }
 
@@ -294,6 +297,26 @@ public class TaskListFragment extends  Fragment{
     }
 
 
+
+    private void setupObservers() {
+        activityModel.getOrderedCards().observe(cards -> {
+            // Make sure we are attached to a valid Activity
+            if (getActivity() == null) return;
+
+            getActivity().runOnUiThread(() -> {
+                if (cards == null || cards.isEmpty()) {
+                    this.view.textViewNoTasks.setVisibility(View.VISIBLE);
+                } else {
+                    this.view.textViewNoTasks.setVisibility(View.GONE);
+                }
+                adapter.clear();
+                if (cards != null) {
+                    adapter.addAll(cards);
+                }
+                adapter.notifyDataSetChanged();
+            });
+        });
+    }
 
 
 }
