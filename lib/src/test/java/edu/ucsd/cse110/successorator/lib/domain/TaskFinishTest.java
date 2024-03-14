@@ -8,7 +8,7 @@ import java.util.List;
 
 public class TaskFinishTest {
 
-    /*@Test
+    @Test
     public void OneTaskChangeTest(){
         //only one task
         Task first = new Task(1, "first", 0);
@@ -57,5 +57,5 @@ public class TaskFinishTest {
         assertEquals(taskList.get(0).equals(third), true);
         assertEquals(taskList.get(1).equals(second), true);
         assertEquals(taskList.get(2).equals(first), true);
-    }*/
+    }
 }

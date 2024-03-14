@@ -11,7 +11,7 @@ import java.util.List;
 
 public class AddTaskplusNameTest {
 
-    /*@Test
+    @Test
     public void FinishedTask(){
         //only one task
         Task first = new Task(null, "Laundry", -1);
@@ -51,5 +51,5 @@ public class AddTaskplusNameTest {
         assertEquals(taskList.get(0).equals(third), true);
         assertEquals(taskList.get(1).equals(second), true);
         assertEquals(taskList.get(2).equals(first), true);
-    }*/
+    }
 }
