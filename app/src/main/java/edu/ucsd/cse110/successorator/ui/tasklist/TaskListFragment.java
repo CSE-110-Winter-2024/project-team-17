@@ -14,14 +14,18 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.format.DateTimeFormatter;
+import java.util.stream.Collectors;
 
 import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.databinding.TasksFragmentBinding;
 import edu.ucsd.cse110.successorator.R;
+import edu.ucsd.cse110.successorator.lib.domain.Task;
+import edu.ucsd.cse110.successorator.lib.util.Observer;
 import edu.ucsd.cse110.successorator.ui.tasklist.dialog.CreateTaskDialogFragment;
 
 public class TaskListFragment extends  Fragment{
@@ -58,6 +62,7 @@ public class TaskListFragment extends  Fragment{
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // US5 start
         // Initialize the Model
         var modelOwner = requireActivity();
         var modelFactory = ViewModelProvider.Factory.from(MainViewModel.initializer);
@@ -70,10 +75,40 @@ public class TaskListFragment extends  Fragment{
             var dialogFragment = ConfirmDeleteCardDialogFragment.newInstance(id);
             dialogFragment.show(getParentFragmentManager(), "ConfirmDeleteCardDialogFragment");
         }*/);
-        activityModel.getOrderedCards().observe(cards -> {
-            if (cards == null) return;
+
+        // Observe changes in the filtered tasks
+        activityModel.getFilteredTasks().observe(cards -> {
+            var newcards = cards;
+
+            if (newcards == null) return;
+
+            Character currentFilter = activityModel.getContextFilter().getValue();
+            // Apply both the context filter and the specific date logic for this fragment
+            List<Task> filteredTasks = newcards.stream()
+                    .filter(task -> currentFilter == null || task.tag() == currentFilter) // Context filtering logic
+                    // Add here any additional filtering specific to this fragment, e.g., date-based filtering
+                    .collect(Collectors.toList());
+
             adapter.clear();
-            adapter.addAll(new ArrayList<>(cards)); // remember the mutable copy here!
+            adapter.addAll(new ArrayList<>(filteredTasks)); // remember the mutable copy here!
+            adapter.notifyDataSetChanged();
+        });
+        // US5 end
+
+        activityModel.getOrderedCards().observe(cards -> {
+            var newcards = cards;
+
+            if (newcards == null) return;
+
+            Character currentFilter = activityModel.getContextFilter().getValue();
+            // Apply both the context filter and the specific date logic for this fragment
+            List<Task> filteredTasks = newcards.stream()
+                    .filter(task -> currentFilter == null || task.tag() == currentFilter) // Context filtering logic
+                    // Add here any additional filtering specific to this fragment, e.g., date-based filtering
+                    .collect(Collectors.toList());
+
+            adapter.clear();
+            adapter.addAll(new ArrayList<>(filteredTasks)); // remember the mutable copy here!
             adapter.notifyDataSetChanged();
         });
     }
@@ -82,9 +117,6 @@ public class TaskListFragment extends  Fragment{
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         this.view = TasksFragmentBinding.inflate(inflater, container, false);
-
-
-
 
         // Set the adapter on the ListView
         view.listView.setAdapter(adapter);
@@ -103,6 +135,17 @@ public class TaskListFragment extends  Fragment{
             //activityModel.removeFinished();
             activityModel.timeSet(LocalDateTime.now());
         }*/
+        String[] item = {activityModel.getTime().getValue().format(formatter),
+                //TODO: When creating item must use the getOffsetTime due to Advance time
+                activityModel.getOffSetTime().plusDays(1).format(formatter), "Pending","Recurring"};
+
+//        if(LocalDateTime.now() != activityModel.getTime().getValue()){
+//            //activityModel.removeFinished();
+//            activityModel.timeSet(LocalDateTime.now());
+//            String[] newItem = {activityModel.getTime().getValue().format(formatter),
+//                    activityModel.getOffSetTime().plusDays(1).format(formatter), "Pending","Recurring"};
+//            item = newItem;
+//        }
         updateTime();
 
 
@@ -124,8 +167,8 @@ public class TaskListFragment extends  Fragment{
         //newly Added
         activityModel.getTime().observe(dates -> {
             if( dates == null) return;
-            formattedDateTime = activityModel.getOffSetTime().format(formatter);
-            formattedTmrDateTime = activityModel.getOffSetTime().plusDays(1).format(formatter);
+            formattedDateTime = activityModel.getTime().getValue().format(formatter);
+            formattedTmrDateTime = activityModel.getTime().getValue().plusDays(1).format(formatter);
             daysItems[0] = "Today "+formattedDateTime;
             daysItems[1] = "Tmr "+formattedTmrDateTime;
             spinner.setAdapter(daysadapter);
@@ -153,14 +196,6 @@ public class TaskListFragment extends  Fragment{
                 // Handle no selection
             }
         });
-
-
-
-
-
-
-
-
         return view.getRoot();
     }
 
@@ -173,22 +208,19 @@ public class TaskListFragment extends  Fragment{
                 LocalDateTime now = LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt());
 
                 if(now.getYear() != activityModel.getTime().getValue().getYear()) {
-                    activityModel.timeSet(LocalDateTime.now());
-                    activityModel.removeFinished();
+
+                    activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
+                    //activityModel.removeFinished();
                 }
                 if(now.getMonth() != activityModel.getTime().getValue().getMonth()) {
-                    activityModel.timeSet(LocalDateTime.now());
-                    activityModel.removeFinished();
+                    activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
+                    //activityModel.removeFinished();
                 }
                 if(now.getDayOfMonth() != activityModel.getTime().getValue().getDayOfMonth()){
-                    activityModel.timeSet(LocalDateTime.now());
-                    activityModel.removeFinished();
-                    //TODO: Commented out the 2am restraint for simplicity
-                    /*if(now.getDayOfMonth() != activityModel.getTime().getValue().getDayOfMonth()+1 &&
-                            now.getHour() > 2) {
-                        activityModel.timeSet(LocalDateTime.now());
-                        activityModel.removeFinished();
-                    }*/
+                    activityModel.getTime().getValue();
+                    activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
+                    //activityModel.removeFinished();
+                    //activityModel.removeFinished();
                 }
 
                 // Call this method again after 1 second

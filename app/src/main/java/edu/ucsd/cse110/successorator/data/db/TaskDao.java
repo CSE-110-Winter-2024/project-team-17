@@ -49,7 +49,7 @@ public interface TaskDao {
         var maxSortOrder = getMaxSortOrder();
         var newFlashcard = new TaskEntity(
                 task.name, maxSortOrder +1, task.finished,
-                task.addedDate, task.frequency, task.tag);
+                task.addedDate, task.currOccurDate, task.nextOccurDate, task.frequency, task.tag);
         return Math.toIntExact(insert(newFlashcard));
     }
 
@@ -58,7 +58,7 @@ public interface TaskDao {
         shiftSortOrder(getMinSortOrder(),getMaxSortOrder(), 1);
         var newFlashcard = new TaskEntity(
                 task.name, getMinSortOrder()-1, task.finished,
-                task.addedDate, task.frequency, task.tag);
+                task.addedDate, task.currOccurDate, task.nextOccurDate, task.frequency, task.tag);
         return Math.toIntExact(insert(newFlashcard));
     }
 
@@ -66,7 +66,7 @@ public interface TaskDao {
     default  int add(TaskEntity task){
         var newFlashcard = new TaskEntity(
                 task.name, task.sortOrder, task.finished,
-                task.addedDate, task.frequency, task.tag);
+                task.addedDate, task.currOccurDate, task.nextOccurDate, task.frequency, task.tag);
         return Math.toIntExact(insert(newFlashcard));
     }
 

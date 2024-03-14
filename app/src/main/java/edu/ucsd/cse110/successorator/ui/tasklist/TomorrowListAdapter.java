@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import edu.ucsd.cse110.successorator.MainViewModel;
+import edu.ucsd.cse110.successorator.R;
 import edu.ucsd.cse110.successorator.databinding.TaskItemBinding;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
 public class TomorrowListAdapter extends ArrayAdapter<Task> {
@@ -70,6 +71,23 @@ public class TomorrowListAdapter extends ArrayAdapter<Task> {
             binding = TaskItemBinding.inflate(layoutInflater, parent, false);
         }
 
+        switch (task.tag()) {
+            case 'H':
+                binding.tagImageView.setImageResource(R.drawable.home);
+                break;
+            case 'W':
+                binding.tagImageView.setImageResource(R.drawable.work);
+                break;
+            case 'S':
+                binding.tagImageView.setImageResource(R.drawable.school);
+                break;
+            case 'E':
+                binding.tagImageView.setImageResource(R.drawable.errand);
+                break;
+            default:
+                binding.tagImageView.setImageResource(R.drawable.home); // Use a default image if no match
+                break;
+        }
 
         // Populate the view with the flashcard's data.
         binding.textView2.setText(task.taskName());
@@ -135,6 +153,11 @@ public class TomorrowListAdapter extends ArrayAdapter<Task> {
         return id;
     }
 
+    public void updateTasks(List<Task> newTasks) {
+        clear();
+        addAll(newTasks); // This should work correctly given TaskListAdapter extends ArrayAdapter<Task>
+        notifyDataSetChanged();
+    }
 
 
 }

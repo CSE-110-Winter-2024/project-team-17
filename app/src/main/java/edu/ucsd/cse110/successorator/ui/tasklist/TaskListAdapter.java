@@ -72,6 +72,23 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
             binding = TaskItemBinding.inflate(layoutInflater, parent, false);
         }
 
+        switch (task.tag()) {
+            case 'H':
+                binding.tagImageView.setImageResource(R.drawable.home);
+                break;
+            case 'W':
+                binding.tagImageView.setImageResource(R.drawable.work);
+                break;
+            case 'S':
+                binding.tagImageView.setImageResource(R.drawable.school);
+                break;
+            case 'E':
+                binding.tagImageView.setImageResource(R.drawable.errand);
+                break;
+            default:
+                binding.tagImageView.setImageResource(R.drawable.home); // Use a default image if no match
+                break;
+        }
 
         // Populate the view with the flashcard's data.
         binding.textView2.setText(task.taskName());
@@ -81,14 +98,11 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
             binding.textView2.setPaintFlags(
                     binding.textView2.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         }
-<<<<<<< Updated upstream
-        binding.textView2.setOnLongClickListener(v -> {
-=======
+
 
         binding.textView2.setText(task.taskName());
         binding.textView2.setOnClickListener(v -> {
 
->>>>>>> Stashed changes
             PopupMenu popup = new PopupMenu(getContext(), v);
             popup.getMenuInflater().inflate(R.menu.menu, popup.getMenu());
 
@@ -144,6 +158,12 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
         return id;
     }
 
-
+    // US5 start
+    public void updateTasks(List<Task> newTasks) {
+        clear();
+        addAll(newTasks); // This should work correctly given TaskListAdapter extends ArrayAdapter<Task>
+        notifyDataSetChanged();
+    }
+    // US5 end
 
 }

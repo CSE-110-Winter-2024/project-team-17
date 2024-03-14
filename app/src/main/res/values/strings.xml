@@ -29,5 +29,6 @@
     <string name="move_to_today">Move to Today</string>
     <string name="finish">Finish</string>
     <string name="delete">Delete</string>
+    <string name="focus_mode">Focus Mode</string>
 
 </resources>
