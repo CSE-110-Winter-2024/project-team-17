@@ -142,6 +142,7 @@ public class CreateTaskDialogFragment extends DialogFragment {
             //Leap year we +1
         }
         card.setFrequency(frequency);
+        activityModel.calculateRecurrence(card);
         activityModel.add(card);
         dialog.dismiss();
     }
