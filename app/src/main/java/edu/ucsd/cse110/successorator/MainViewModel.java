@@ -143,6 +143,8 @@ public class MainViewModel extends ViewModel {
         for (int i = 0; i <tasks.size(); i++) {
             tasks.get(i).updateRecurrence();
         }
+        var newTasks = new ArrayList<>(tasks);
+        taskRepository.save(newTasks);
     }
 
     public void removeFinished() {

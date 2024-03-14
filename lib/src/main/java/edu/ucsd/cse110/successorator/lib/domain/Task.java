@@ -43,6 +43,7 @@ public class Task {
         this.tag = tag;
         this.currOccurDate = new String(addedDate);
         this.nextOccurDate = null;
+        calculateRecurrence(); //nextOccurDate should be set
     }
 
     public @Nullable Integer id() {
@@ -85,6 +86,8 @@ public class Task {
     public void updateRecurrence() {
         //Todays date in the string format
         //Can call this to update currOccurDate and nextOccurDate?
+        //We will set if the task is unfinished, curroccurdate just rolls over to the next day, while we will calculate the next supposed occurdate and e
+        //Set that to nextOccurdate
         LocalDateTime currentDateTime = LocalDateTime.now();
         LocalDateTime previousDateTime = currentDateTime.minusDays(1);
 
@@ -92,7 +95,13 @@ public class Task {
         String originalDate = this.addedDate;
         String prevDateString = dateToString(previousDateTime);
         int originalDayOfWeek = (int)(originalDate.charAt(0));
-        if (!prevDateString.equals(this.currOccurDate)) { //If its the same, then we know its time to update
+
+        //This is for the case when we are not supposed to calculate the new occurence date, but we need to
+        //Account for the rollover to new date if the task is unfinished
+        if (!prevDateString.equals(this.nextOccurDate)) { //If its the same, then we know its time to update
+            if (!this.finished) {
+                this.currOccurDate = dateToString(currentDateTime);
+            }
             return;
         }
         // Get the first day of the month
@@ -102,8 +111,6 @@ public class Task {
         DayOfWeek firstDayOfWeek = firstDayOfNextMonth.getDayOfWeek();
         int dayOfWeekNumber = firstDayOfWeek.getValue(); //The DayofWeek of the first date of the month
 
-        int currDayOfWeekValue = currentDate.getDayOfWeek().getValue();
-
 
 
         if (this.frequency == 0) {
@@ -112,14 +119,18 @@ public class Task {
             this.currOccurDate = dateToString(currentDateTime);
             return;
         }
-        else if (this.frequency < 0) {
-            //Monthly recurrence
+        else if (this.frequency < 0) { //Monthly recurrence
+
             int weekNum = this.frequency * -1; //Which week in the month
+            int newMonth = 0;
+            int newDate = 0;
+            int newYear = 0;
+
             if (weekNum == 5) {//Special case for week 5 recurrences
                 /*In the case of week 5, there are no months where there are two 5th weeks in a row
                 //Proposal: First try and set it to the 5th week of this month
                 If that is not possible then roll over to next months 1st week*/
-                if (this.addedDate.compareTo(this.currOccurDate) == 0) {
+                if (this.addedDate.compareTo(this.currOccurDate) == 0) {//When its the first time the recurrence is updated MAYBE WE CAN PUT THIS IN TASKS
                     //First time the recurrence is updated
                     //Set currOccurDate to the following following months first week
                     LocalDate nextNextMonthDate = currentDate.plusMonths(2);
@@ -132,52 +143,157 @@ public class Task {
                     if (originalDayOfWeek < firstDayNum) {
                         weekNum++; //In the case if the day we want to occur on is before the first day of the month
                     }
-                    int newDate = (originalDayOfWeek - firstDayNum + 1) + (weekNum-1)*7;
-                    int newMonth = nextNextMonthDate.getMonthValue();
-                    int newYear = nextNextMonthDate.getYear();
+                    newDate = (originalDayOfWeek - firstDayNum + 1) + (weekNum-1)*7;
+                    newMonth = nextNextMonthDate.getMonthValue();
+                    newYear = nextNextMonthDate.getYear();
                 }
                 else {
                     int currDate = currentDate.getDayOfMonth();
-                    if (currDate < 15) {
-                        //If the previous settime was in week 1 then we set it to the same months week 5
-                        LocalDate firstDayOfthisMonth = currentDate.withDayOfMonth(1);
-                        firstDayOfWeek = firstDayOfthisMonth.getDayOfWeek();
-                        int firstDayNum = firstDayOfWeek.getValue();
+                    LocalDate firstDayOfMonth = currentDate.withDayOfMonth(1);
+                    int firstDayNum = firstDayOfMonth.getDayOfWeek().getValue();
+
+                    //Try to assign it to this months 5th week
+                    newDate = (originalDayOfWeek - firstDayNum + 1) + (weekNum-1)*7;
+                    if (newDate > firstDayOfMonth.lengthOfMonth() || newDate == currDate) {
+                        //Set currOccurDate to the following following months first week
+                        weekNum = 1;
+                        LocalDate firstDayOfNextNextMonth = nextMonthDate.withDayOfMonth(1);
+                        // Get the day of the week for the first day of the month
+                        firstDayOfWeek = firstDayOfNextNextMonth.getDayOfWeek();
+                        firstDayNum = firstDayOfWeek.getValue(); //The DayofWeek of the first date of the month
+
                         if (originalDayOfWeek < firstDayNum) {
                             weekNum++; //In the case if the day we want to occur on is before the first day of the month
                         }
-                        int newDate = (originalDayOfWeek - firstDayNum + 1) + (weekNum-1)*7;
+                        newDate = (originalDayOfWeek - firstDayNum + 1) + (weekNum-1)*7;
+                        newMonth = nextMonthDate.getMonthValue();
+                        newYear = nextMonthDate.getYear();
 
                     }
-
-                    int lastDayOfMonth = currentDate.lengthOfMonth();
-//                    if (newDate > lastDayOfMonth) { //Set it to the next month
-//
-//                    }
-
                 }
-
-
             }
-            int firstDayNum = dayOfWeekNumber;
-            if (originalDayOfWeek < firstDayNum) {
-                weekNum++; //In the case if the day we want to occur on is before the first day of the month
+            else {
+                int firstDayNum = dayOfWeekNumber;
+                if (originalDayOfWeek < firstDayNum) {
+                    weekNum++; //In the case if the day we want to occur on is before the first day of the month
+                }
+                newDate = (originalDayOfWeek - firstDayNum + 1) + (weekNum-1)*7;
+                newMonth = nextMonthDate.getMonthValue();
+                newYear = nextMonthDate.getYear();
             }
-            int newDate = (originalDayOfWeek - firstDayNum + 1) + (weekNum-1)*7;
-            int newMonth = nextMonthDate.getMonthValue();
-            int newYear = nextMonthDate.getYear();
+
             String newOccurDate = Integer.toString(originalDayOfWeek)
                         + Integer.toString(newMonth) + Integer.toString(newDate) + Integer.toString(newYear);
-            this.currOccurDate = newOccurDate;
-            return;
+            this.nextOccurDate = newOccurDate;
 
         }
         else if (this.frequency == 1) {
             //Daily recurrence
             //Show everyday
             String newOccurDate = dateToString(currentDateTime);
-            this.currOccurDate = newOccurDate;
+            this.nextOccurDate = newOccurDate;
+
+        }
+        else if (this.frequency == 7) {
+            //Weekly
+            //LocalDate oneWeekLater = currentDate.plusWeeks(1);
+            LocalDateTime oneWeekLater = previousDateTime.plusWeeks(1);
+            int newWeekDay = oneWeekLater.getDayOfWeek().getValue();
+            int newMonth = oneWeekLater.getMonthValue();
+            int newDate = oneWeekLater.getDayOfMonth();
+            int newYear = oneWeekLater.getYear();
+            String newOccurDate = Integer.toString(newWeekDay)
+                    + Integer.toString(newMonth) + Integer.toString(newDate) + Integer.toString(newYear);
+            this.nextOccurDate = newOccurDate;
+        }
+
+        //If the task is unfinished then the curroccurdate should just roll over, otherwise it is set to nextoccurdate
+        if (this.finished) {
+            this.currOccurDate = this.nextOccurDate;
+            this.flipFinished();
+        }
+        else {
+            this.currOccurDate = dateToString(currentDateTime);
+        }
+    }
+
+    //This is only used to initialize the nextoccurdate when the task is first created
+    public void calculateRecurrence() {
+        //Todays date in the string format
+        //Can call this to update currOccurDate and nextOccurDate?
+        //We will set if the task is unfinished, curroccurdate just rolls over to the next day, while we will calculate the next supposed occurdate and e
+        //Set that to nextOccurdate
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        LocalDateTime previousDateTime = currentDateTime.minusDays(1);
+
+        LocalDate currentDate = LocalDate.now();
+        String originalDate = this.addedDate;
+        String prevDateString = dateToString(previousDateTime);
+        int originalDayOfWeek = (int)(originalDate.charAt(0));
+
+        // Get the first day of the month
+        LocalDate nextMonthDate = currentDate.plusMonths(1);
+        LocalDate firstDayOfNextMonth = nextMonthDate.withDayOfMonth(1);
+        // Get the day of the week for the first day of the month
+        DayOfWeek firstDayOfWeek = firstDayOfNextMonth.getDayOfWeek();
+        int dayOfWeekNumber = firstDayOfWeek.getValue(); //The DayofWeek of the first date of the month
+
+
+
+        if (this.frequency == 0) {
+            //No recurrence
             return;
+        }
+        else if (this.frequency < 0) { //Monthly recurrence
+
+            int weekNum = this.frequency * -1; //Which week in the month
+            int newMonth = 0;
+            int newDate = 0;
+            int newYear = 0;
+
+            if (weekNum == 5) {//Special case for week 5 recurrences
+                /*In the case of week 5, there are no months where there are two 5th weeks in a row
+                //Proposal: First try and set it to the 5th week of this month
+                If that is not possible then roll over to next months 1st week*/
+                if (this.addedDate.compareTo(this.currOccurDate) == 0) {//When its the first time the recurrence is updated MAYBE WE CAN PUT THIS IN TASKS
+                    //First time the recurrence is updated
+                    //Set currOccurDate to the following following months first week
+                    LocalDate nextNextMonthDate = currentDate.plusMonths(2);
+                    weekNum = 1;
+                    LocalDate firstDayOfNextNextMonth = nextNextMonthDate.withDayOfMonth(1);
+                    // Get the day of the week for the first day of the month
+                    firstDayOfWeek = firstDayOfNextNextMonth.getDayOfWeek();
+                    int firstDayNum = firstDayOfWeek.getValue(); //The DayofWeek of the first date of the month
+
+                    if (originalDayOfWeek < firstDayNum) {
+                        weekNum++; //In the case if the day we want to occur on is before the first day of the month
+                    }
+                    newDate = (originalDayOfWeek - firstDayNum + 1) + (weekNum-1)*7;
+                    newMonth = nextNextMonthDate.getMonthValue();
+                    newYear = nextNextMonthDate.getYear();
+                }
+
+            } else {
+                int firstDayNum = dayOfWeekNumber;
+                if (originalDayOfWeek < firstDayNum) {
+                    weekNum++; //In the case if the day we want to occur on is before the first day of the month
+                }
+                newDate = (originalDayOfWeek - firstDayNum + 1) + (weekNum-1)*7;
+                newMonth = nextMonthDate.getMonthValue();
+                newYear = nextMonthDate.getYear();
+            }
+
+            String newOccurDate = Integer.toString(originalDayOfWeek)
+                    + Integer.toString(newMonth) + Integer.toString(newDate) + Integer.toString(newYear);
+            this.nextOccurDate = newOccurDate;
+
+        }
+        else if (this.frequency == 1) {
+            //Daily recurrence
+            //Show everyday
+            LocalDateTime tomorrowDateTime = currentDateTime.plusDays(1);
+            String newOccurDate = dateToString(tomorrowDateTime);
+            this.nextOccurDate = newOccurDate;
 
         }
         else if (this.frequency == 7) {
@@ -189,9 +305,9 @@ public class Task {
             int newYear = oneWeekLater.getYear();
             String newOccurDate = Integer.toString(newWeekDay)
                     + Integer.toString(newMonth) + Integer.toString(newDate) + Integer.toString(newYear);
-            this.currOccurDate = newOccurDate;
-            return;
+            this.nextOccurDate = newOccurDate;
         }
+
     }
 
     @Override

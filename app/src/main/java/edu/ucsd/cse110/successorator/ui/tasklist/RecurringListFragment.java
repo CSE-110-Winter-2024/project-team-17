@@ -230,14 +230,17 @@ public class RecurringListFragment extends  Fragment{
                 if(now.getYear() != activityModel.getTime().getValue().getYear()) {
                     activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
                     activityModel.removeFinished();
+                    activityModel.updateRecurrence();
                 }
                 if(now.getMonth() != activityModel.getTime().getValue().getMonth()) {
                     activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
                     activityModel.removeFinished();
+                    activityModel.updateRecurrence();
                 }
                 if(now.getDayOfMonth() != activityModel.getTime().getValue().getDayOfMonth()){
                     activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
                     activityModel.removeFinished();
+                    activityModel.updateRecurrence();
                     //TODO: Commented out the 2am restraint for simplicity
                     /*if(now.getDayOfMonth() != activityModel.getTime().getValue().getDayOfMonth()+1 &&
                             now.getHour() > 2) {

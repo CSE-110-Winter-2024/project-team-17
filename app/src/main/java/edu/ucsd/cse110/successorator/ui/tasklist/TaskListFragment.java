@@ -273,12 +273,13 @@ public class TaskListFragment extends  Fragment{
                 }
                 if(now.getMonth() != activityModel.getTime().getValue().getMonth()) {
                     activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
-
+                    activityModel.updateRecurrence();
                     //activityModel.removeFinished();
                 }
                 if(now.getDayOfMonth() != activityModel.getTime().getValue().getDayOfMonth()){
                     activityModel.getTime().getValue();
                     activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
+                    activityModel.updateRecurrence();
                     //activityModel.removeFinished();
                     //activityModel.removeFinished();
 
@@ -288,7 +289,6 @@ public class TaskListFragment extends  Fragment{
                         activityModel.timeSet(LocalDateTime.now());
                         activityModel.removeFinished();
                     }*/
-                    //I'll call the for loop to update all tasks in here
                     activityModel.updateRecurrence();
 
                 }
