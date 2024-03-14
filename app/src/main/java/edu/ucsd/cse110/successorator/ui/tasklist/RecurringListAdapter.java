@@ -73,19 +73,19 @@ public class RecurringListAdapter extends ArrayAdapter<Task> {
 
         switch (task.tag()) {
             case 'H':
-                binding.tagImageView.setImageResource(R.drawable.home);
+                binding.tagImageView.setImageResource(task.finished() ? R.drawable.home_finished : R.drawable.home);
                 break;
             case 'W':
-                binding.tagImageView.setImageResource(R.drawable.work);
+                binding.tagImageView.setImageResource(task.finished() ? R.drawable.work_finished : R.drawable.work);
                 break;
             case 'S':
-                binding.tagImageView.setImageResource(R.drawable.school);
+                binding.tagImageView.setImageResource(task.finished() ? R.drawable.school_finished : R.drawable.school);
                 break;
             case 'E':
-                binding.tagImageView.setImageResource(R.drawable.errand);
+                binding.tagImageView.setImageResource(task.finished() ? R.drawable.errand_finished : R.drawable.errand);
                 break;
             default:
-                binding.tagImageView.setImageResource(R.drawable.home); // Use a default image if no match
+                binding.tagImageView.setImageResource(task.finished() ? R.drawable.home_finished : R.drawable.home); // Default case if no tag matches
                 break;
         }
 

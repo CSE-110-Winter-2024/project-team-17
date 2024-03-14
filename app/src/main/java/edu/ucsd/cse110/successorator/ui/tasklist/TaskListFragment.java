@@ -146,8 +146,6 @@ public class TaskListFragment extends  Fragment{
             adapter.clear();
             adapter.addAll(new ArrayList<>(cards)); // remember the mutable copy here!
 
-
-
             if (newcards == null) return;
 
             Character currentFilter = activityModel.getContextFilter().getValue();
@@ -199,7 +197,6 @@ public class TaskListFragment extends  Fragment{
 //        }
         updateTime();
 
-
         view.advanceButton.setOnClickListener(v -> {
             //TODO: Reset the right swap list view
             activityModel.timeAdvance();
@@ -226,9 +223,6 @@ public class TaskListFragment extends  Fragment{
 
             //view.dateView.setText(formattedDateTime);
         });
-
-
-
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

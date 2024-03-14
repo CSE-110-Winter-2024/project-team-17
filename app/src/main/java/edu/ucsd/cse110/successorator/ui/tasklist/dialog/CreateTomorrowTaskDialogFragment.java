@@ -55,7 +55,6 @@ public class CreateTomorrowTaskDialogFragment extends DialogFragment {
 
         return new AlertDialog.Builder(getActivity())
                 .setTitle("New Task")
-                .setMessage("Please provide the new task name.")
                 .setView(view.getRoot())
                 .setPositiveButton("Create", this::onPositiveButtonClick)
                 .setNegativeButton("Cancel", this::OnNegativeButtonClick)
