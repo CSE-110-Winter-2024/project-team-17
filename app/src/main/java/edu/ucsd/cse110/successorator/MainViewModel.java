@@ -177,7 +177,6 @@ public class MainViewModel extends ViewModel {
         //deleteFinished();
     }
 
-
     // Method to apply filtering and sorting
     private void updateFilteredTasks(List<Task> tasks, Character filter) {
         if (tasks == null) return;
@@ -193,6 +192,8 @@ public class MainViewModel extends ViewModel {
         filteredTasks.setValue(filteredList);
     }
 
+
+    // Method to apply filtering and sorting
     public Subject<List<Task>> getFilteredTasks() {
         return filteredTasks;
     }
@@ -207,20 +208,18 @@ public class MainViewModel extends ViewModel {
 
     public void setDateforTask (Task task,int one){
 
-
         String setter = " ";
 
         //if move to today
         LocalDateTime current;
-        if(one==1){
-            current  = time.getValue();
+        if (one == 1) {
+            current = time.getValue();
         }
-        //if move to tomorrow
-        else if(one == 0){
-            current  = time.getValue().plusDays(timeOffset);
-        }
-        else{
-            current  = time.getValue().plusDays(timeOffset+timeOffset);
+            //if move to tomorrow
+        else if (one == 0) {
+            current = time.getValue().plusDays(timeOffset);
+        } else {
+            current = time.getValue().plusDays(timeOffset + timeOffset);
         }
         String dayOfWeek = Integer.toString(current.getDayOfWeek().getValue());
         String date = Integer.toString(current.getDayOfMonth());
@@ -231,6 +230,7 @@ public class MainViewModel extends ViewModel {
         task.setDate(setter);
         reorder(task);
     }
+
 
     public void test(Task t){
         System.out.println(t.currOccurDate());
