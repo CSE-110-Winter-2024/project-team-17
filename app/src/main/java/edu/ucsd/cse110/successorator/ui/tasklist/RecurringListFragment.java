@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import edu.ucsd.cse110.successorator.MainViewModel;
@@ -121,10 +122,10 @@ public class RecurringListFragment extends  Fragment{
                 //Extract the date from cards
 
                 if (newcards.get(i).frequency() == 0) {
-                    newcards.remove(i);
+                    newcards.set(i, null);
                 }
             }
-
+            newcards.removeIf(Objects::isNull);
             if (newcards == null) return;
 
             Character currentFilter = activityModel.getContextFilter().getValue();
