@@ -99,40 +99,7 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
                     binding.textView2.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         }
 
-<<<<<<< Updated upstream
 
-        binding.textView2.setText(task.taskName());
-        binding.textView2.setOnClickListener(v -> {
-
-            PopupMenu popup = new PopupMenu(getContext(), v);
-            popup.getMenuInflater().inflate(R.menu.menu, popup.getMenu());
-
-            popup.setOnMenuItemClickListener(item -> {
-                int itemId = item.getItemId();
-                if (itemId == R.id.today_id) {
-                    activityModel.setDateforTask(task, 1);
-                } else if (itemId == R.id.tomorrow_id) {
-                    activityModel.setDateforTask(task, 0);
-                } else if (itemId == R.id.finish_id) {
-                    task.flipFinished();
-                    System.out.println(task.finished());
-                } else if (itemId == R.id.delete_id) {
-                    if(task.frequency()==0){
-                        activityModel.delete(task);
-                    }
-                    else{
-                        activityModel.deleteTaskRec(task, task.frequency());
-                    }
-
-                } else {
-                    return false;
-                }
-                return true;
-
-            });
-            popup.show();
-            //TODO: bug
-=======
         binding.textView2.setText(task.taskName());
         binding.textView2.setOnClickListener(v -> {
            task.flipFinished();
@@ -142,7 +109,6 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
                 binding.textView2.setPaintFlags(
                         binding.textView2.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             }
->>>>>>> Stashed changes
             activityModel.reorder(task);
 
             //not sure to use or not yet.

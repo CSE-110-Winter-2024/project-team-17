@@ -98,36 +98,8 @@ public class TomorrowListAdapter extends ArrayAdapter<Task> {
                     binding.textView2.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         }
         binding.textView2.setOnClickListener(v -> {
-<<<<<<< Updated upstream
-            PopupMenu popup = new PopupMenu(getContext(), v);
-            popup.getMenuInflater().inflate(R.menu.menu, popup.getMenu());
 
-            popup.setOnMenuItemClickListener(item -> {
-                int itemId = item.getItemId();
-                if (itemId == R.id.today_id) {
-                    activityModel.setDateforTask(task, 1);
-                } else if (itemId == R.id.tomorrow_id) {
-                    activityModel.setDateforTask(task, 2);
-                } else if (itemId == R.id.finish_id) {
-                    if(task.frequency()==1){
-                        Toast.makeText(getContext(), "This goal is still active for Today. If you've finished this goal for Today, mark it finished in that view", Toast.LENGTH_SHORT).show();
-                    }
-                    task.flipFinished();
-                } else if (itemId == R.id.delete_id) {
-                    if(task.frequency()==0){
-                        activityModel.delete(task);
-                    }
-                    else{
-                        activityModel.deleteTaskRec(task, task.frequency());
-                    }
-                } else {
-                    return false;
-                }
-                return true;
 
-            });
-            popup.show();
-=======
             if(task.frequency()==1){
                 Toast.makeText(getContext(), "This goal is still active for Today. If you've finished this goal for Today, mark it finished in that view", Toast.LENGTH_SHORT).show();
             }
@@ -139,7 +111,7 @@ public class TomorrowListAdapter extends ArrayAdapter<Task> {
                         binding.textView2.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             }
 
->>>>>>> Stashed changes
+
             activityModel.reorder(task);
 
             //not sure to use or not yet.
