@@ -4,7 +4,6 @@ package edu.ucsd.cse110.successorator.ui.tasklist;
 import android.content.Context;
 import android.graphics.Paint;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -21,12 +20,12 @@ import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.R;
 import edu.ucsd.cse110.successorator.databinding.TaskItemBinding;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
-public class TaskListAdapter extends ArrayAdapter<Task> {
+public class TomorrowListAdapter extends ArrayAdapter<Task> {
 
     Consumer<Integer> onChangeClick;
     MainViewModel activityModel;
 
-    public TaskListAdapter(
+    public TomorrowListAdapter(
             Context context,
             List<Task> flashcards,
             Consumer<Integer> onChangeClick
@@ -35,7 +34,7 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
         this.onChangeClick = onChangeClick;
     }
 
-    public TaskListAdapter(
+    public TomorrowListAdapter(
             Context context,
             List<Task> flashcards,
             MainViewModel activityModel
@@ -45,7 +44,7 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
         this.activityModel = activityModel;
     }
 
-    public TaskListAdapter(Context context, List<Task> tasks) {
+    public TomorrowListAdapter(Context context, List<Task> tasks) {
         // This sets a bunch of stuff internally, which we can access
         // with getContext() and getItem() for example.
         //
@@ -98,10 +97,7 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
             binding.textView2.setPaintFlags(
                     binding.textView2.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         }
-
-        binding.textView2.setText(task.taskName());
         binding.textView2.setOnClickListener(v -> {
-
             PopupMenu popup = new PopupMenu(getContext(), v);
             popup.getMenuInflater().inflate(R.menu.menu, popup.getMenu());
 
@@ -110,10 +106,12 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
                 if (itemId == R.id.today_id) {
                     activityModel.setDateforTask(task, 1);
                 } else if (itemId == R.id.tomorrow_id) {
-                    activityModel.setDateforTask(task, 0);
+                    activityModel.setDateforTask(task, 2);
                 } else if (itemId == R.id.finish_id) {
+                    if(task.frequency()==1){
+                        Toast.makeText(getContext(), "This goal is still active for Today. If you've finished this goal for Today, mark it finished in that view", Toast.LENGTH_SHORT).show();
+                    }
                     task.flipFinished();
-                    System.out.println(task.finished());
                 } else if (itemId == R.id.delete_id) {
                     if(task.frequency()==0){
                         activityModel.delete(task);
@@ -121,7 +119,6 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
                     else{
                         activityModel.deleteTaskRec(task, task.frequency());
                     }
-
                 } else {
                     return false;
                 }
@@ -129,7 +126,6 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
 
             });
             popup.show();
-            //TODO: bug
             activityModel.reorder(task);
 
             //not sure to use or not yet.
@@ -157,12 +153,11 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
         return id;
     }
 
-    // US5 start
     public void updateTasks(List<Task> newTasks) {
         clear();
         addAll(newTasks); // This should work correctly given TaskListAdapter extends ArrayAdapter<Task>
         notifyDataSetChanged();
     }
-    // US5 end
+
 
 }

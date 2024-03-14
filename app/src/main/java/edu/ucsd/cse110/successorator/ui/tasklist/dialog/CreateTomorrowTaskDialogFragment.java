@@ -16,23 +16,23 @@ import androidx.lifecycle.ViewModelProvider;
 import java.util.Calendar;
 
 import edu.ucsd.cse110.successorator.MainViewModel;
-import edu.ucsd.cse110.successorator.databinding.FragmentDialogCreatePendingBinding;
 import edu.ucsd.cse110.successorator.databinding.FragmentDialogCreateTaskBinding;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
-public class CreatePendingTaskDialogFragment extends DialogFragment{
 
-    private FragmentDialogCreatePendingBinding view;
+public class CreateTomorrowTaskDialogFragment extends DialogFragment {
+
+    private FragmentDialogCreateTaskBinding view;
 
     private MainViewModel activityModel;
     private char selectedTag = 'H';
     private ImageView lastSelectedTag;
 
-    CreatePendingTaskDialogFragment() {
+    CreateTomorrowTaskDialogFragment() {
 
     }
 
-    public static CreatePendingTaskDialogFragment newInstance() {
-        var fragment = new CreatePendingTaskDialogFragment();
+    public static CreateTomorrowTaskDialogFragment newInstance() {
+        var fragment = new CreateTomorrowTaskDialogFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -50,10 +50,12 @@ public class CreatePendingTaskDialogFragment extends DialogFragment{
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        this.view = FragmentDialogCreatePendingBinding.inflate(getLayoutInflater());
+        this.view = FragmentDialogCreateTaskBinding.inflate(getLayoutInflater());
+        setupTagSelection();
 
         return new AlertDialog.Builder(getActivity())
                 .setTitle("New Task")
+                .setMessage("Please provide the new task name.")
                 .setView(view.getRoot())
                 .setPositiveButton("Create", this::onPositiveButtonClick)
                 .setNegativeButton("Cancel", this::OnNegativeButtonClick)
@@ -90,7 +92,7 @@ public class CreatePendingTaskDialogFragment extends DialogFragment{
 
     private void onPositiveButtonClick(DialogInterface dialog, int which) {
         var front = view.cardFrontEditText.getText().toString();
-        LocalDateTime currentDateTime = LocalDateTime.now();
+        LocalDateTime currentDateTime = LocalDateTime.now().plusDays(1);
 
         int year = currentDateTime.getYear();
         int month = currentDateTime.getMonthValue(); // Month value is 1-based
@@ -119,10 +121,27 @@ public class CreatePendingTaskDialogFragment extends DialogFragment{
         else {
             dayStr = Integer.toString(dayOfMonth);
         }
-        //TODO: Add task context
         String dateString = Integer.toString(dayOfWeekValue) + monthStr + dayStr + Integer.toString(year);
         var card = new Task(null, front, -1, false, dateString, 0, selectedTag);
-        int frequency = -1;
+        int frequency = 0;
+        if (view.onetimeRadioButton.isChecked()) {
+            frequency = 0;
+        }
+        else if (view.dailyRadioButton.isChecked()) {
+            frequency = 1;
+        }
+        else if (view.weeklyRadioButton.isChecked()) {
+            frequency = 7;
+        }
+        else if (view.monthlyRadioButton.isChecked()) {
+            double freq  = Math.ceil(dayOfMonth/7.0); //-Frequency is the number of weeks away from the first week
+            // E.g. day of sunday, with frequency = -3, is the 3rd "sunday" of the month
+            frequency = (int)(0-freq);
+        }
+        else if (view.yearlyRadioButton.isChecked()) {
+            frequency = 365; //Frequency will be determined based on if its a leap year or not
+            //Leap year we +1
+        }
         card.setFrequency(frequency);
         activityModel.add(card);
         dialog.dismiss();
@@ -131,5 +150,4 @@ public class CreatePendingTaskDialogFragment extends DialogFragment{
     private void OnNegativeButtonClick(DialogInterface dialog, int which) {
         dialog.cancel();
     }
-
 }

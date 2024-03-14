@@ -19,4 +19,16 @@
     <string name="remove_button">Remove button</string>
     <string name="add_button">+</string>
     <string name="no_goals_text">No goals for the Day. Click the + at the upper right to enter your Most Important Thing.</string>
+    <string-array name="days_array">
+        <item>Today</item>
+        <item>Tomorrow</item>
+        <item>Pending</item>
+        <item>Recurring</item>
+    </string-array>
+    <string name="move_to_tomorrow">Move to Tomorrow</string>
+    <string name="move_to_today">Move to Today</string>
+    <string name="finish">Finish</string>
+    <string name="delete">Delete</string>
+    <string name="focus_mode">Focus Mode</string>
+
 </resources>
