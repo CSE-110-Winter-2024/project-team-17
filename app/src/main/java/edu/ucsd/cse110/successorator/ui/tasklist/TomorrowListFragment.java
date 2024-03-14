@@ -68,7 +68,6 @@ public class TomorrowListFragment extends  Fragment{
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         // Initialize the Model
         var modelOwner = requireActivity();
         var modelFactory = ViewModelProvider.Factory.from(MainViewModel.initializer);
@@ -117,13 +116,21 @@ public class TomorrowListFragment extends  Fragment{
             String nowDate = Integer.toString(dayOfWeekValue) + monthStr + dayStr + Integer.toString(year);
             List<Task> newcards = new ArrayList<Task>(cards);
 
-            for (int i = 0; i < newcards.size(); i++) {
-                //Extract the date from cards
-                String currDate = newcards.get(i).currOccurDate();
-                if (nowDate.compareTo(currDate) != 0) {
-                    newcards.remove(i);
-                }
-            }
+            newcards.remove(0);
+            //THERE IS ERROR HERE TRYING TO FIX!!!
+            //UNABLE TO CORRECTLY FILTER OUT TOMORROWS TASKS
+//            for (int i = 0; i < cards.size(); i++) {
+//                //Extract the date from cards
+//
+//                for (int j = 0; j < newcards.size(); j++) {
+//                    String currDate = newcards.get(j).currOccurDate();
+//                    if (nowDate.compareTo(currDate) != 0 && newcards.get(i).frequency() != 1) {
+//                        newcards.remove(j);
+//                        break;
+//                    }
+//                }
+//
+//            }
             if (newcards == null) return;
 
             Character currentFilter = activityModel.getContextFilter().getValue();
@@ -172,13 +179,16 @@ public class TomorrowListFragment extends  Fragment{
             else {
                 dayStr = Integer.toString(dayOfMonth);
             }
-            String nowDate = Integer.toString(dayOfWeekValue) + monthStr + dayStr + Integer.toString(year);
+            String tmrDate = Integer.toString(dayOfWeekValue) + monthStr + dayStr + Integer.toString(year);
+            if (cards == null) {
+                return;
+            }
             List<Task> newcards = new ArrayList<Task>(cards);
 
             for (int i = 0; i < newcards.size(); i++) {
                 //Extract the date from cards
-                String currDate = newcards.get(i).currOccurDate();
-                if (nowDate.compareTo(currDate) != 0) {
+                String occurDate = newcards.get(i).currOccurDate();
+                if (tmrDate.compareTo(occurDate) != 0 && newcards.get(i).frequency() != 1) {
                     newcards.remove(i);
                 }
             }
@@ -288,20 +298,24 @@ public class TomorrowListFragment extends  Fragment{
                 if(now.getYear() != activityModel.getTime().getValue().getYear()) {
                     activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
                     activityModel.removeFinished();
+                    activityModel.updateRecurrence();
                 }
                 if(now.getMonth() != activityModel.getTime().getValue().getMonth()) {
                     activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
                     activityModel.removeFinished();
+                    activityModel.updateRecurrence();
                 }
                 if(now.getDayOfMonth() != activityModel.getTime().getValue().getDayOfMonth()){
                     activityModel.getTime().getValue();
                     activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
                     activityModel.removeFinished();
+                    activityModel.updateRecurrence();
                     //TODO: Commented out the 2am restraint for simplicity
                     if(now.getDayOfMonth() != activityModel.getTime().getValue().getDayOfMonth()+1 &&
                             now.getHour() > 2) {
                         activityModel.timeSet(LocalDateTime.now());
                         activityModel.removeFinished();
+                        activityModel.updateRecurrence();
                     }
                 }
 

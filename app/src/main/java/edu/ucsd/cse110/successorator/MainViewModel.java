@@ -134,10 +134,24 @@ public class MainViewModel extends ViewModel {
         }
     }
 
+
+    public void updateRecurrence() {
+        var tasks = this.orderedCards.getValue();
+        if(tasks == null) {
+            return;
+        }
+        for (int i = 0; i <tasks.size(); i++) {
+            tasks.get(i).updateRecurrence();
+        }
+        var newTasks = new ArrayList<>(tasks);
+        taskRepository.save(newTasks);
+    }
+
     public void delete(Task task){
 
         taskRepository.remove(task.id());
     }
+
 
 
     public void removeFinished() {
@@ -157,10 +171,11 @@ public class MainViewModel extends ViewModel {
     public void timeAdvance(){
         //time.setValue(time.getValue().plusDays(timeOffset));
         //timeRepo.setDateTime(time.getValue().plusDays(timeOffset));
-        timeRepo.setDateTime(time.getValue().plusDays(timeOffset));
+        //timeRepo.setDateTime(time.getValue().plusDays(timeOffset));
         timeAdvCnt++;
         deleteFinished();
     }
+
 
     public LocalDateTime getOffSetTime(){
         return time.getValue();
