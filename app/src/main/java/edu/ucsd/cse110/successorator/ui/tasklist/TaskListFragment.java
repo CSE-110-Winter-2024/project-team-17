@@ -149,8 +149,6 @@ public class TaskListFragment extends  Fragment{
             adapter.clear();
             adapter.addAll(new ArrayList<>(cards)); // remember the mutable copy here!
 
-
-
             if (newcards == null) return;
 
             Character currentFilter = activityModel.getContextFilter().getValue();
@@ -202,7 +200,6 @@ public class TaskListFragment extends  Fragment{
 //        }
         updateTime();
 
-
         view.advanceButton.setOnClickListener(v -> {
             //TODO: Reset the right swap list view
             activityModel.timeAdvance();
@@ -229,9 +226,6 @@ public class TaskListFragment extends  Fragment{
             //view.dateView.setText(formattedDateTime);
         });
 
-
-
-
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
@@ -249,6 +243,9 @@ public class TaskListFragment extends  Fragment{
                 // Handle no selection
             }
         });
+
+        setupObservers();
+
         return view.getRoot();
     }
 
@@ -302,6 +299,26 @@ public class TaskListFragment extends  Fragment{
     }
 
 
+
+    private void setupObservers() {
+        activityModel.getOrderedCards().observe(cards -> {
+            // Make sure we are attached to a valid Activity
+            if (getActivity() == null) return;
+
+            getActivity().runOnUiThread(() -> {
+                if (cards == null || cards.isEmpty()) {
+                    this.view.textViewNoTasks.setVisibility(View.VISIBLE);
+                } else {
+                    this.view.textViewNoTasks.setVisibility(View.GONE);
+                }
+                adapter.clear();
+                if (cards != null) {
+                    adapter.addAll(cards);
+                }
+                adapter.notifyDataSetChanged();
+            });
+        });
+    }
 
 
 }

@@ -18,12 +18,10 @@ public class Task {
     private int sortOrder;
     private final String taskName;
     private boolean finished = false;
-
     private String addedDate;
     private String currOccurDate;
     private String nextOccurDate;
     private int frequency;
-
     private char tag;
 
 
