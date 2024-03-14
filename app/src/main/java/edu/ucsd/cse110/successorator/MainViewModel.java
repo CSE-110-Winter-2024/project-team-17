@@ -192,24 +192,8 @@ public class MainViewModel extends ViewModel {
         filteredTasks.setValue(filteredList);
     }
 
-<<<<<<< Updated upstream
-    // Method to apply filtering and sorting
-    private void updateFilteredTasks(List<Task> tasks, Character filter) {
-        if (tasks == null) return;
-        List<Task> filteredList;
-        if (filter == null) {
-            filteredList = new ArrayList<>(tasks);
-        } else {
-            filteredList = tasks.stream()
-                    .filter(task -> task.tag() == filter)
-                    .sorted(Comparator.comparingInt(Task::sortOrder))
-                    .collect(Collectors.toList());
-        }
-        filteredTasks.setValue(filteredList);
-    }
 
-=======
->>>>>>> Stashed changes
+    // Method to apply filtering and sorting
     public Subject<List<Task>> getFilteredTasks() {
         return filteredTasks;
     }
@@ -221,28 +205,21 @@ public class MainViewModel extends ViewModel {
     public void setContextFilter(Character filter) {
         this.contextFilter.setValue(filter);
     }
-<<<<<<< Updated upstream
 
     public void setDateforTask (Task task,int one){
 
-
-=======
-    public void setDateforTask (Task task,int one){
-
->>>>>>> Stashed changes
         String setter = " ";
 
         //if move to today
         LocalDateTime current;
-        if(one==1){
-            current  = time.getValue();
+        if (one == 1) {
+            current = time.getValue();
         }
-        //if move to tomorrow
-        else if(one == 0){
-            current  = time.getValue().plusDays(timeOffset);
-        }
-        else{
-            current  = time.getValue().plusDays(timeOffset+timeOffset);
+            //if move to tomorrow
+        else if (one == 0) {
+            current = time.getValue().plusDays(timeOffset);
+        } else {
+            current = time.getValue().plusDays(timeOffset + timeOffset);
         }
         String dayOfWeek = Integer.toString(current.getDayOfWeek().getValue());
         String date = Integer.toString(current.getDayOfMonth());
@@ -253,6 +230,7 @@ public class MainViewModel extends ViewModel {
         task.setDate(setter);
         reorder(task);
     }
+
 
     public void test(Task t){
         System.out.println(t.currOccurDate());
