@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.PopupMenu;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -95,22 +97,27 @@ public class TomorrowListAdapter extends ArrayAdapter<Task> {
             binding.textView2.setPaintFlags(
                     binding.textView2.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         }
-        binding.textView2.setOnLongClickListener(v -> {
-            if(!task.finished()){
-                binding.textView2.setPaintFlags(
-                        binding.textView2.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-            }else{
-                binding.textView2.setPaintFlags(0);
+        binding.textView2.setOnClickListener(v -> {
+
+
+            if(task.frequency()==1){
+                Toast.makeText(getContext(), "This goal is still active for Today. If you've finished this goal for Today, mark it finished in that view", Toast.LENGTH_SHORT).show();
             }
             task.flipFinished();
-            //TODO: bug
+            if(!task.finished()){
+                binding.textView2.setPaintFlags(0);
+            }else{
+                binding.textView2.setPaintFlags(
+                        binding.textView2.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            }
+
+
             activityModel.reorder(task);
 
             //not sure to use or not yet.
             /*var id = task.id();
             assert id != null;
             onChangeClick.accept(id);*/
-            return true;
         });
 
         return binding.getRoot();

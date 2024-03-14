@@ -64,7 +64,7 @@ public class Task {
     }
 
     public void flipFinished() {
-        finished = !finished;
+        this.finished = !finished;
     }
 
     public void setFrequency(int frequency) {
@@ -310,6 +310,9 @@ public class Task {
 
     }
 
+    public void setCurrOccurDate(String dateString) {
+        this.currOccurDate = dateString;
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -377,4 +380,7 @@ public class Task {
         return Integer.toString(dayOfWeekValue) + monthStr + dayStr + Integer.toString(year);
 
     }
+    public void setDate(String newDate){ this.currOccurDate = newDate;}
+
+
 }

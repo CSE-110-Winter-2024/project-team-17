@@ -99,37 +99,24 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
                     binding.textView2.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         }
 
-        binding.textView2.setOnLongClickListener(v -> {
-            PopupMenu popup = new PopupMenu(getContext(), v);
-            popup.getMenuInflater().inflate(R.menu.menu, popup.getMenu());
-            String message = "";
 
-           popup.setOnMenuItemClickListener(item ->{
-           switch(item.getItemId()){
-               case (1000007):
-                   Toast.makeText(getContext(), "TODAY", Toast.LENGTH_SHORT).show();
-                   break;
+        binding.textView2.setText(task.taskName());
+        binding.textView2.setOnClickListener(v -> {
+           task.flipFinished();
+            if(!task.finished()){
+                binding.textView2.setPaintFlags(0);
+            }else{
+                binding.textView2.setPaintFlags(
+                        binding.textView2.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            }
+            activityModel.reorder(task);
 
-               case (1000023):
-                   Toast.makeText(getContext(), "tomorrow", Toast.LENGTH_SHORT).show();
-                   break;
-
-               case (1000026):
-                   Toast.makeText(getContext(), "finish", Toast.LENGTH_SHORT).show();
-                   break;
-
-               case (1000022):
-                   Toast.makeText(getContext(), "delete", Toast.LENGTH_SHORT).show();
-                   break;
-
-               default:
-                   return false;
-           }
-           return true;
-           });
-            popup.show();
-            return true;
+            //not sure to use or not yet.
+            /*var id = task.id();
+            assert id != null;
+            onChangeClick.accept(id);*/
         });
+
         return binding.getRoot();
     }
 

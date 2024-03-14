@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.PopupMenu;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -96,13 +98,35 @@ public class PendingListAdapter extends ArrayAdapter<Task> {
                     binding.textView2.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         }
         binding.textView2.setOnLongClickListener(v -> {
-            if(!task.finished()){
-                binding.textView2.setPaintFlags(
-                        binding.textView2.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-            }else{
-                binding.textView2.setPaintFlags(0);
-            }
-            task.flipFinished();
+
+            PopupMenu popup = new PopupMenu(getContext(), v);
+            popup.getMenuInflater().inflate(R.menu.menu, popup.getMenu());
+
+            popup.setOnMenuItemClickListener(item -> {
+                int itemId = item.getItemId();
+                if (itemId == R.id.today_id) {
+                   activityModel.setDateforTask(task, 1);
+                    System.out.println(task.currOccurDate());
+                } else if (itemId == R.id.tomorrow_id) {
+                    activityModel.setDateforTask(task, 0);
+                    activityModel.test(task);
+                } else if (itemId == R.id.finish_id) {
+                    task.flipFinished();
+                } else if (itemId == R.id.delete_id) {
+                    if(task.frequency()==0){
+                        activityModel.delete(task);
+                    }
+                    else{
+                        activityModel.deleteTaskRec(task, task.frequency());
+                    }
+
+                } else {
+                    return false;
+                }
+                return true;
+
+            });
+            popup.show();
             //TODO: bug
             activityModel.reorder(task);
 
@@ -115,6 +139,7 @@ public class PendingListAdapter extends ArrayAdapter<Task> {
 
         return binding.getRoot();
     }
+
 
     @Override
     public boolean hasStableIds() {
