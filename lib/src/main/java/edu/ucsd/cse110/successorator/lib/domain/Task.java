@@ -24,6 +24,7 @@ public class Task {
     private char tag;
 
     public Task (Integer id, String taskName, int sortOrder) {
+    
         this.id = id;
         this.taskName = taskName;
         this.sortOrder = sortOrder;
@@ -52,7 +53,7 @@ public class Task {
         this.tag = tag;
         this.currOccurDate = currOccurDate;
         this.nextOccurDate = nextOccurDate;
-        calculateRecurrence(); //nextOccurDate should be set
+        calculateRecurrence(0); //nextOccurDate should be set
     }
 
     public @Nullable Integer id() {
