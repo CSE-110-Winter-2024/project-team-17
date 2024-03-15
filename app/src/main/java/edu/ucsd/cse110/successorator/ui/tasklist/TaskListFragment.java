@@ -308,7 +308,7 @@ public class TaskListFragment extends  Fragment{
                     //activityModel.removeFinished();
                 }
                 if(now.getMonth() != activityModel.getTime().getValue().getMonth()) {
-                    activityModel.timeSet(now());
+                    activityModel.timeSet(now);
                     //activityModel.updateRecurrence(now);
 
                     //activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
