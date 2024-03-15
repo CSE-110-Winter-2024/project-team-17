@@ -303,7 +303,7 @@ public class TaskListFragment extends  Fragment{
 
                 if(now.getYear() != activityModel.getTime().getValue().getYear()) {
 
-                    activityModel.timeSet(now());
+                    activityModel.timeSet(now);
                     //activityModel.updateRecurrence(now);
                     //activityModel.removeFinished();
                 }
