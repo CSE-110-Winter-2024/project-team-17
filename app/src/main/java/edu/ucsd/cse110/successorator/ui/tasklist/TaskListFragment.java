@@ -175,7 +175,7 @@ public class TaskListFragment extends  Fragment{
             if (cards == null) {
                 return;
             }
-            List<Task> newcards = new ArrayList<Task>(cards);
+            List<Task> newcards = new ArrayList<>(cards);
             for (int i = 0; i < newcards.size(); i++) {
                 //Extract the date from cards
                 String currDate = newcards.get(i).currOccurDate();
@@ -237,7 +237,6 @@ public class TaskListFragment extends  Fragment{
         view.advanceButton.setOnClickListener(v -> {
             //TODO: Reset the right swap list view
             activityModel.timeAdvance();
-            //activityModel.setUIState(1);
         });
 
         String[] daysItems = {"Today "+formattedDateTime, "Tmr "+formattedTmrDateTime, "Pending", "Recurring"};
