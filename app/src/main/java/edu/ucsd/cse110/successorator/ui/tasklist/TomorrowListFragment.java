@@ -326,7 +326,7 @@ public class TomorrowListFragment extends  Fragment{
                         activityModel.timeSet(LocalDateTime.now());
                         activityModel.removeFinished();
                         activityModel.updateRecurrence(now);
-                    }
+                    }*/
                 }
 
                 // Call this method again after 1 second
