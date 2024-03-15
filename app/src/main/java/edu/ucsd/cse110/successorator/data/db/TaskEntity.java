@@ -43,6 +43,8 @@ public class TaskEntity {
         this.sortOrder = sortOrder;
         this.finished = finished;
         this.addedDate = addedDate;
+        this.nextOccurDate = nextOccurDate;
+        this.currOccurDate = currOccurDate;
         this.frequency = frequency;
         this.tag = tag;
     }
@@ -54,6 +56,6 @@ public class TaskEntity {
     }
 
     public @NonNull Task toTask() {
-        return new Task(id, name, sortOrder, finished, addedDate, frequency, tag);
+        return new Task(id, name, sortOrder, finished, addedDate, currOccurDate, nextOccurDate, frequency, tag);
     }
 }
