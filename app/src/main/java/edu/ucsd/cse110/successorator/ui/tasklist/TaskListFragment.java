@@ -25,7 +25,9 @@ import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.databinding.TasksFragmentBinding;
 import edu.ucsd.cse110.successorator.R;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
+
 import edu.ucsd.cse110.successorator.lib.util.Observer;
+
 import edu.ucsd.cse110.successorator.ui.tasklist.dialog.CreateTaskDialogFragment;
 
 public class TaskListFragment extends  Fragment{
@@ -62,7 +64,6 @@ public class TaskListFragment extends  Fragment{
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // US5 start
         // Initialize the Model
         var modelOwner = requireActivity();
         var modelFactory = ViewModelProvider.Factory.from(MainViewModel.initializer);
@@ -78,8 +79,49 @@ public class TaskListFragment extends  Fragment{
 
         // Observe changes in the filtered tasks
         activityModel.getFilteredTasks().observe(cards -> {
-            var newcards = cards;
 
+            //Determine the current date as a string
+            LocalDateTime currentDateTime = LocalDateTime.now();
+            int year = currentDateTime.getYear();
+            int month = currentDateTime.getMonthValue(); // Month value is 1-based
+            int dayOfMonth = currentDateTime.getDayOfMonth();
+            DayOfWeek dayOfWeek = currentDateTime.getDayOfWeek();
+            // You can then use the DayOfWeek enum directly, or you can get its value as an int if needed
+            int dayOfWeekValue = dayOfWeek.getValue(); // Monday is 1, Sunday is 7
+            String dayOfWeekName = dayOfWeek.toString();
+
+            int[] dateArray = new int[4];
+            dateArray[0] = dayOfWeekValue;
+            dateArray[1] = month;
+            dateArray[2] = dayOfMonth;
+            dateArray[3] = year;
+            String monthStr;
+            if (month < 10) {
+                monthStr = "0" + Integer.toString(month);
+            }
+            else {
+                monthStr = Integer.toString(month);
+            }
+            String dayStr;
+            if (dayOfMonth < 10) {
+                dayStr = "0" + Integer.toString(dayOfMonth);
+            }
+            else {
+                dayStr = Integer.toString(dayOfMonth);
+            }
+            String nowDate = Integer.toString(dayOfWeekValue) + monthStr + dayStr + Integer.toString(year);
+            //int size = cards.size();
+            if (cards == null) {
+                return;
+            }
+            List<Task> newcards = new ArrayList<Task>(cards);
+            for (int i = 0; i < newcards.size(); i++) {
+                //Extract the date from cards
+                String currDate = newcards.get(i).currOccurDate();
+                if (nowDate.compareTo(currDate) != 0) {
+                    newcards.remove(i);
+                }
+            }
             if (newcards == null) return;
 
             Character currentFilter = activityModel.getContextFilter().getValue();
@@ -91,13 +133,56 @@ public class TaskListFragment extends  Fragment{
 
             adapter.clear();
             adapter.addAll(new ArrayList<>(filteredTasks)); // remember the mutable copy here!
+
             adapter.notifyDataSetChanged();
         });
         // US5 end
 
         activityModel.getOrderedCards().observe(cards -> {
-            var newcards = cards;
 
+            //Determine the current date as a string
+
+            LocalDateTime currentDateTime = LocalDateTime.now();
+            int year = currentDateTime.getYear();
+            int month = currentDateTime.getMonthValue(); // Month value is 1-based
+            int dayOfMonth = currentDateTime.getDayOfMonth();
+            DayOfWeek dayOfWeek = currentDateTime.getDayOfWeek();
+            // You can then use the DayOfWeek enum directly, or you can get its value as an int if needed
+            int dayOfWeekValue = dayOfWeek.getValue(); // Monday is 1, Sunday is 7
+            String dayOfWeekName = dayOfWeek.toString();
+
+            int[] dateArray = new int[4];
+            dateArray[0] = dayOfWeekValue;
+            dateArray[1] = month;
+            dateArray[2] = dayOfMonth;
+            dateArray[3] = year;
+            String monthStr;
+            if (month < 10) {
+                monthStr = "0" + Integer.toString(month);
+            }
+            else {
+                monthStr = Integer.toString(month);
+            }
+            String dayStr;
+            if (dayOfMonth < 10) {
+                dayStr = "0" + Integer.toString(dayOfMonth);
+            }
+            else {
+                dayStr = Integer.toString(dayOfMonth);
+            }
+            String nowDate = Integer.toString(dayOfWeekValue) + monthStr + dayStr + Integer.toString(year);
+            //int size = cards.size();
+            if (cards == null) {
+                return;
+            }
+            List<Task> newcards = new ArrayList<>(cards);
+            for (int i = 0; i < newcards.size(); i++) {
+                //Extract the date from cards
+                String currDate = newcards.get(i).currOccurDate();
+                if (nowDate.compareTo(currDate) != 0) {
+                    newcards.remove(i);
+                }
+            }
             if (newcards == null) return;
 
             Character currentFilter = activityModel.getContextFilter().getValue();
@@ -109,6 +194,7 @@ public class TaskListFragment extends  Fragment{
 
             adapter.clear();
             adapter.addAll(new ArrayList<>(filteredTasks)); // remember the mutable copy here!
+
             adapter.notifyDataSetChanged();
         });
     }
@@ -148,11 +234,9 @@ public class TaskListFragment extends  Fragment{
 //        }
         updateTime();
 
-
         view.advanceButton.setOnClickListener(v -> {
             //TODO: Reset the right swap list view
             activityModel.timeAdvance();
-            //activityModel.setUIState(1);
         });
 
         String[] daysItems = {"Today "+formattedDateTime, "Tmr "+formattedTmrDateTime, "Pending", "Recurring"};
@@ -176,9 +260,6 @@ public class TaskListFragment extends  Fragment{
             //view.dateView.setText(formattedDateTime);
         });
 
-
-
-
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
@@ -196,6 +277,9 @@ public class TaskListFragment extends  Fragment{
                 // Handle no selection
             }
         });
+
+        setupObservers();
+
         return view.getRoot();
     }
 
@@ -209,18 +293,37 @@ public class TaskListFragment extends  Fragment{
 
                 if(now.getYear() != activityModel.getTime().getValue().getYear()) {
 
-                    activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
+                    activityModel.timeSet(now);
+                    activityModel.updateRecurrence();
+                    //activityModel.removeFinished();
+                }
+                if(now.getMonth() != activityModel.getTime().getValue().getMonth()) {
+                    activityModel.timeSet(now);
+                    activityModel.updateRecurrence();
+
+                    //activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
                     //activityModel.removeFinished();
                 }
                 if(now.getMonth() != activityModel.getTime().getValue().getMonth()) {
                     activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
+                    activityModel.updateRecurrence();
                     //activityModel.removeFinished();
                 }
                 if(now.getDayOfMonth() != activityModel.getTime().getValue().getDayOfMonth()){
-                    activityModel.getTime().getValue();
-                    activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
+                    //activityModel.getTime().getValue();
+                    activityModel.timeSet(now);
+                    activityModel.updateRecurrence();
                     //activityModel.removeFinished();
                     //activityModel.removeFinished();
+
+                    //TODO: Commented out the 2am restraint for simplicity
+                    /*if(now.getDayOfMonth() != activityModel.getTime().getValue().getDayOfMonth()+1 &&
+                            now.getHour() > 2) {
+                        activityModel.timeSet(LocalDateTime.now());
+                        activityModel.removeFinished();
+                    }*/
+                    activityModel.updateRecurrence();
+
                 }
 
                 // Call this method again after 1 second
@@ -230,6 +333,26 @@ public class TaskListFragment extends  Fragment{
     }
 
 
+
+    private void setupObservers() {
+        activityModel.getOrderedCards().observe(cards -> {
+            // Make sure we are attached to a valid Activity
+            if (getActivity() == null) return;
+
+            getActivity().runOnUiThread(() -> {
+                if (cards == null || cards.isEmpty()) {
+                    this.view.textViewNoTasks.setVisibility(View.VISIBLE);
+                } else {
+                    this.view.textViewNoTasks.setVisibility(View.GONE);
+                }
+                adapter.clear();
+                if (cards != null) {
+                    adapter.addAll(cards);
+                }
+                adapter.notifyDataSetChanged();
+            });
+        });
+    }
 
 
 }

@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import edu.ucsd.cse110.successorator.MainViewModel;
@@ -86,6 +87,9 @@ public class PendingListFragment extends  Fragment{
 
         // Observe changes in the filtered tasks
         activityModel.getFilteredTasks().observe(cards -> {
+            if(cards == null) {
+                return;
+            }
             List<Task> newcards = new ArrayList<Task>(cards);
             for (int i = 0; i < newcards.size(); i++) {
                 //Extract the date from cards
@@ -109,14 +113,19 @@ public class PendingListFragment extends  Fragment{
         });
 
         activityModel.getOrderedCards().observe(cards -> {
+            if (cards == null) {
+                return;
+            }
             List<Task> newcards = new ArrayList<Task>(cards);
             for (int i = 0; i < newcards.size(); i++) {
                 //Extract the date from cards
                 String currDate = newcards.get(i).currOccurDate();
-                if (newcards.get(i).finished()) {
-                    newcards.remove(i);
+                if (!newcards.get(i).finished() && newcards.get(i).currOccurDate()!=null) { //NEED TO FIX THE CONDITION FOR THIS
+                    newcards.set(i, null);
                 }
             }
+            newcards.removeIf(Objects::isNull);
+
             if (newcards == null) return;
 
             Character currentFilter = activityModel.getContextFilter().getValue();
@@ -125,6 +134,7 @@ public class PendingListFragment extends  Fragment{
                     .filter(task -> currentFilter == null || task.tag() == currentFilter) // Context filtering logic
                     // Add here any additional filtering specific to this fragment, e.g., date-based filtering
                     .collect(Collectors.toList());
+
 
             adapter.clear();
             adapter.addAll(new ArrayList<>(filteredTasks)); // remember the mutable copy here!
@@ -219,14 +229,17 @@ public class PendingListFragment extends  Fragment{
                 if(now.getYear() != activityModel.getTime().getValue().getYear()) {
                     activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
                     activityModel.removeFinished();
+                    activityModel.updateRecurrence();
                 }
                 if(now.getMonth() != activityModel.getTime().getValue().getMonth()) {
                     activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
                     activityModel.removeFinished();
+                    activityModel.updateRecurrence();
                 }
                 if(now.getDayOfMonth() != activityModel.getTime().getValue().getDayOfMonth()){
                     activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
                     activityModel.removeFinished();
+                    activityModel.updateRecurrence();
                     //TODO: Commented out the 2am restraint for simplicity
                     /*if(now.getDayOfMonth() != activityModel.getTime().getValue().getDayOfMonth()+1 &&
                             now.getHour() > 2) {

@@ -90,6 +90,7 @@ public class CreatePendingTaskDialogFragment extends DialogFragment{
 
     private void onPositiveButtonClick(DialogInterface dialog, int which) {
         var front = view.cardFrontEditText.getText().toString();
+        /*
         LocalDateTime currentDateTime = LocalDateTime.now();
 
         int year = currentDateTime.getYear();
@@ -119,11 +120,17 @@ public class CreatePendingTaskDialogFragment extends DialogFragment{
         else {
             dayStr = Integer.toString(dayOfMonth);
         }
+
+         */
         //TODO: Add task context
-        String dateString = Integer.toString(dayOfWeekValue) + monthStr + dayStr + Integer.toString(year);
-        var card = new Task(null, front, -1, false, dateString, 0, selectedTag);
-        int frequency = -1;
+        //String dateString = Integer.toString(dayOfWeekValue) + monthStr + dayStr + Integer.toString(year);
+
+        //Pending Tasks will have null as their addeddate, we treat them as a one time task in the undefinite future
+        //Meaning frequency will also be 0
+        var card = new Task(null, front, -1, false, null, 0, selectedTag);
+        int frequency = 0;
         card.setFrequency(frequency);
+        activityModel.calculateRecurrence(card);
         activityModel.add(card);
         dialog.dismiss();
     }
