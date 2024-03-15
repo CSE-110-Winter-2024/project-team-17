@@ -152,8 +152,6 @@ public class MainViewModel extends ViewModel {
         taskRepository.remove(task.id());
     }
 
-
-
     public void removeFinished() {
         taskRepository.removeFinished();
     }
@@ -261,6 +259,7 @@ public class MainViewModel extends ViewModel {
     public void calculateRecurrence(Task card) {
         card.calculateRecurrence(timeAdvCnt);
     }
+
 }
 
 

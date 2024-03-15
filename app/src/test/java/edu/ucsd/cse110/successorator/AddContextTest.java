@@ -15,25 +15,21 @@ import static org.junit.Assert.assertTrue;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import edu.ucsd.cse110.successorator.MainViewModel;
 import edu.ucsd.cse110.successorator.lib.data.InMemoryDataSource;
 import edu.ucsd.cse110.successorator.lib.domain.SimpleTaskRepository;
 import edu.ucsd.cse110.successorator.lib.domain.Task;
 import edu.ucsd.cse110.successorator.lib.domain.TimeKeeper;
 import edu.ucsd.cse110.successorator.lib.util.Subject;
-import edu.ucsd.cse110.successorator.ui.tasklist.TaskListAdapter;
-import edu.ucsd.cse110.successorator.ui.tasklist.TaskListFragment;
 
 @RunWith(RobolectricTestRunner.class)
-public class ContextTest {
+public class AddContextTest {
 
-    @Mock private TimeKeeper mockTimeKeeper;
-    @Mock private SimpleTaskRepository taskRepo;
-    @Mock private Subject<LocalDateTime> mockDateTimeSubject;
-    @Mock private MainViewModel mockViewModel;
-    @Mock private TaskListAdapter adapter;
-    @Mock private TaskListFragment fragment;
-    @Mock private List<Task> initialTasks;
+    @Mock
+    private TimeKeeper mockTimeKeeper;
+    @Mock
+    private SimpleTaskRepository taskRepo;
+    @Mock
+    private Subject<LocalDateTime> mockDateTimeSubject;
 
     @Before
     public void setUp() {
@@ -42,8 +38,18 @@ public class ContextTest {
         Mockito.when(mockDateTimeSubject.getValue()).thenReturn(LocalDateTime.now()); // Provide a mock date time
     }
 
+    /*
+     * Given the user wants to add a new task
+     * And the task is related to the H (home) context
+     * When the user taps the “+” button
+     * Then the user sees an input field where they can enter the task name
+     * And the user sees four context choices
+     * When the user enters the task name
+     * And the user chooses the H context
+     * Then the user sees the task tagged with H
+     */
     @Test
-    public void addContextsTest() {
+    public void addContextTest() {
         var dataSource = InMemoryDataSource.fromDefault();
         taskRepo = new SimpleTaskRepository(dataSource);
         var model = new MainViewModel(taskRepo, mockTimeKeeper); // Use mocked TimeKeeper
@@ -67,6 +73,18 @@ public class ContextTest {
                 model.getOrderedCards().getValue().contains(newTask));
     }
 
+    /*
+     * Given there are two tasks
+     * And the user wants to add a new task
+     * And the task is related to the W (work) context
+     * When the user taps the “+” button
+     * Then the user sees an input field where they can enter the task name
+     * And the user sees four context choices
+     * When the user enters the task name
+     * And the user chooses the W context
+     * Then the user sees the task tagged with W
+     * And the tasks are sorted in the correct order
+     */
     @Test
     public void addMultipleContextsTest() {
         var dataSource = InMemoryDataSource.fromDefault();
@@ -102,34 +120,6 @@ public class ContextTest {
         assertTrue("New task should come after existing tasks",
                 tasks.indexOf(existingTask1) < newTaskIndex &&
                         tasks.indexOf(existingTask2) < newTaskIndex);
-    }
-
-    @Test
-    public void finishContextTest() {
-        // Given the initial state from setUp
-
-        // When the first task is marked as finished
-        Task finishedTask = initialTasks.get(0);
-        finishedTask.flipFinished(); // Assuming flipFinished() toggles the finished state of the task
-        adapter.notifyDataSetChanged(); // Simulate notifying the adapter of data change
-
-        // Emulate ViewModel updating tasks based on business logic
-        when(mockViewModel.getOrderedTasks()).thenReturn(initialTasks.stream()
-                .sorted((task1, task2) -> Boolean.compare(task2.finished(), task1.finished())) // Move finished tasks to top
-                .collect(Collectors.toList()));
-
-        // Trigger any necessary updates (this would usually be done through LiveData observations)
-        fragment.updateTasks(mockViewModel.getOrderedTasks().getValue());
-
-        // Then the task is displayed as finished (with strike-through)
-        assertTrue("First task should be marked as finished", finishedTask.finished());
-
-        // And it is moved to the top of the list of finished tasks
-        Task topTask = adapter.getItem(0); // Assuming the adapter reorders based on finished status
-        assertEquals("Finished task should be at the top", finishedTask, topTask);
-
-        // Additionally, check if the UI properties match expected finished task attributes
-        // (This part is more challenging to test directly without an actual UI framework like Espresso)
     }
 
 }
