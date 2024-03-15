@@ -8,7 +8,6 @@ import java.time.LocalDateTime; // Import the LocalDateTime class from java.time
 import java.time.DayOfWeek; // Import the DayOfWeek enum from java.time package
 
 
-import java.io.Serializable;
 import java.util.Objects;
 
 
@@ -23,7 +22,6 @@ public class Task {
     private String nextOccurDate;
     private int frequency;
     private char tag;
-
 
     public Task (Integer id, String taskName, int sortOrder) {
         this.id = id;
@@ -69,6 +67,8 @@ public class Task {
     public void setFrequency(int frequency) {
         this.frequency = frequency;
     }
+
+    public void setFinished(boolean finish) {this.finished = finish; }
 
     public Task withId(int id) {
         return new Task(id, this.taskName, this.sortOrder, this.finished, this.addedDate, this.frequency, this.tag);
@@ -380,6 +380,11 @@ public class Task {
 
     }
     public void setDate(String newDate){ this.currOccurDate = newDate;}
+
+    public boolean isToday(LocalDate currentDate) {
+        // Assuming currOccurDate returns a LocalDate, compare it with currentDate
+        return this.currOccurDate().equals(currentDate);
+    }
 
 
 }
