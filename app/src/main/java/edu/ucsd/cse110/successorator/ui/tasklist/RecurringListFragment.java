@@ -88,6 +88,9 @@ public class RecurringListFragment extends  Fragment{
 
         // Observe changes in the filtered tasks
         activityModel.getFilteredTasks().observe(cards -> {
+            if(cards == null) {
+                return;
+            }
             List<Task> newcards = new ArrayList<Task>(cards);
 
             for (int i = 0; i < newcards.size(); i++) {

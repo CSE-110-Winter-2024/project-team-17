@@ -87,6 +87,9 @@ public class PendingListFragment extends  Fragment{
 
         // Observe changes in the filtered tasks
         activityModel.getFilteredTasks().observe(cards -> {
+            if(cards == null) {
+                return;
+            }
             List<Task> newcards = new ArrayList<Task>(cards);
             for (int i = 0; i < newcards.size(); i++) {
                 //Extract the date from cards

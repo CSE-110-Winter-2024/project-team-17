@@ -84,6 +84,9 @@ public class TomorrowListFragment extends  Fragment{
         }*/);
 
         activityModel.getFilteredTasks().observe(cards -> {
+            if(cards == null) {
+                return;
+            }
             //Determine the current date as a string
             LocalDateTime currentDateTime = LocalDateTime.now();
             LocalDateTime tomorrowDateTime = currentDateTime.plusDays(1);
@@ -148,7 +151,9 @@ public class TomorrowListFragment extends  Fragment{
 
 
         activityModel.getOrderedCards().observe(cards -> {
-
+            if(cards == null) {
+                return;
+            }
             //Determine the current date as a string
             LocalDateTime currentDateTime = LocalDateTime.now();
             LocalDateTime tomorrowDateTime = currentDateTime.plusDays(1);
@@ -180,11 +185,11 @@ public class TomorrowListFragment extends  Fragment{
                 dayStr = Integer.toString(dayOfMonth);
             }
             String tmrDate = Integer.toString(dayOfWeekValue) + monthStr + dayStr + Integer.toString(year);
-            if (cards == null) {
-                return;
-            }
             List<Task> newcards = new ArrayList<Task>(cards);
 
+            //THERE IS ERROR HERE TRYING TO FIX!!!
+            //UNABLE TO CORRECTLY FILTER OUT TOMORROWS TASKS
+            //Trying to fix now
             for (int i = 0; i < newcards.size(); i++) {
 
                 //Extract the date from cards
@@ -196,6 +201,7 @@ public class TomorrowListFragment extends  Fragment{
                 }
             }
             newcards.removeIf(Objects::isNull);
+
             if (newcards == null) return;
 
             Character currentFilter = activityModel.getContextFilter().getValue();
@@ -315,7 +321,7 @@ public class TomorrowListFragment extends  Fragment{
                     activityModel.removeFinished();
                     activityModel.updateRecurrence(now);
                     //TODO: Commented out the 2am restraint for simplicity
-                    if(now.getDayOfMonth() != activityModel.getTime().getValue().getDayOfMonth()+1 &&
+                    /*if(now.getDayOfMonth() != activityModel.getTime().getValue().getDayOfMonth()+1 &&
                             now.getHour() > 2) {
                         activityModel.timeSet(LocalDateTime.now());
                         activityModel.removeFinished();

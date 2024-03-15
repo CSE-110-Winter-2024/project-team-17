@@ -8,7 +8,6 @@ import java.time.LocalDateTime; // Import the LocalDateTime class from java.time
 import java.time.DayOfWeek; // Import the DayOfWeek enum from java.time package
 
 
-import java.io.Serializable;
 import java.util.Objects;
 
 
@@ -18,14 +17,11 @@ public class Task {
     private int sortOrder;
     private final String taskName;
     private boolean finished = false;
-
     private String addedDate;
     private String currOccurDate;
     private String nextOccurDate;
     private int frequency;
-
     private char tag;
-
 
     public Task (Integer id, String taskName, int sortOrder) {
         this.id = id;
@@ -43,7 +39,8 @@ public class Task {
         this.tag = tag;
         this.currOccurDate = new String(addedDate);
         this.nextOccurDate = null;
-        calculateRecurrence(); //nextOccurDate should be set
+        //calculateRecurrence(); //nextOccurDate should be set
+        //calculateRecurrence(); //nextOccurDate should be set
     }
     public Task (Integer id, String taskName, int sortOrder, boolean finished, String addedDate, String currOccurDate, String nextOccurDate, int frequency, char tag) {
         this.id = id;
@@ -83,6 +80,8 @@ public class Task {
         this.frequency = frequency;
     }
 
+    public void setFinished(boolean finish) {this.finished = finish; }
+
     public Task withId(int id) {
         return new Task(id, this.taskName, this.sortOrder, this.finished, this.addedDate, this.frequency, this.tag);
     }
@@ -103,7 +102,7 @@ public class Task {
         //LocalDateTime currentDateTime = LocalDateTime.now().plusDays();
         LocalDateTime previousDateTime = currentDateTime.minusDays(1);
 
-        LocalDate currentDate = LocalDate.now();
+        LocalDate currentDate = LocalDate.now().plusDays(timeAdvCnt);
         String originalDate = this.addedDate;
         String prevDateString = dateToString(previousDateTime);
         int originalDayOfWeek = Character.getNumericValue(originalDate.charAt(0));
@@ -252,7 +251,7 @@ public class Task {
     }
 
     //This is only used to initialize the nextoccurdate when the task is first created
-    public void calculateRecurrence() {
+    public void calculateRecurrence(int timeAdvCnt) {
         //Todays date in the string format
         //Can call this to update currOccurDate and nextOccurDate?
         //We will set if the task is unfinished, curroccurdate just rolls over to the next day, while we will calculate the next supposed occurdate and e
@@ -261,11 +260,10 @@ public class Task {
         if (this.nextOccurDate != null) {
             return;
         }
-
-        LocalDateTime currentDateTime = LocalDateTime.now();
+        LocalDateTime currentDateTime = LocalDateTime.now().plusDays(timeAdvCnt);
         LocalDateTime previousDateTime = currentDateTime.minusDays(1);
 
-        LocalDate currentDate = LocalDate.now();
+        LocalDate currentDate = LocalDate.now().plusDays(timeAdvCnt);
         String originalDate = this.addedDate;
         String prevDateString = dateToString(previousDateTime);
         int originalDayOfWeek = Character.getNumericValue(originalDate.charAt(0));
@@ -490,5 +488,10 @@ public class Task {
         }
 
     }
+    public boolean isToday(LocalDate currentDate) {
+        // Assuming currOccurDate returns a LocalDate, compare it with currentDate
+        return this.currOccurDate().equals(currentDate);
+    }
+
 
 }

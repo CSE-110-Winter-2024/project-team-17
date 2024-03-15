@@ -55,7 +55,6 @@ public class CreateTomorrowTaskDialogFragment extends DialogFragment {
 
         return new AlertDialog.Builder(getActivity())
                 .setTitle("New Task")
-                .setMessage("Please provide the new task name.")
                 .setView(view.getRoot())
                 .setPositiveButton("Create", this::onPositiveButtonClick)
                 .setNegativeButton("Cancel", this::OnNegativeButtonClick)
@@ -143,6 +142,7 @@ public class CreateTomorrowTaskDialogFragment extends DialogFragment {
             //Leap year we +1
         }
         card.setFrequency(frequency);
+        activityModel.calculateRecurrence(card);
         activityModel.add(card);
         dialog.dismiss();
     }
