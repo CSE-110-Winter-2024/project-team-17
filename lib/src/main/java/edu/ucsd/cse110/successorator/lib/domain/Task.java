@@ -103,7 +103,7 @@ public class Task {
         //LocalDateTime currentDateTime = LocalDateTime.now().plusDays();
         LocalDateTime previousDateTime = currentDateTime.minusDays(1);
 
-        LocalDate currentDate = LocalDate.now().plusDays(timeAdvCnt);
+        LocalDate currentDate = LocalDate.now();
         String originalDate = this.addedDate;
         String prevDateString = dateToString(previousDateTime);
         int originalDayOfWeek = Character.getNumericValue(originalDate.charAt(0));
