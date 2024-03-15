@@ -45,6 +45,18 @@ public class Task {
         this.nextOccurDate = null;
         calculateRecurrence(); //nextOccurDate should be set
     }
+    public Task (Integer id, String taskName, int sortOrder, boolean finished, String addedDate, String currOccurDate, String nextOccurDate, int frequency, char tag) {
+        this.id = id;
+        this.taskName = taskName;
+        this.sortOrder = sortOrder;
+        this.finished = finished;
+        this.addedDate = addedDate;
+        this.frequency = frequency;
+        this.tag = tag;
+        this.currOccurDate = currOccurDate;
+        this.nextOccurDate = nextOccurDate;
+        calculateRecurrence(); //nextOccurDate should be set
+    }
 
     public @Nullable Integer id() {
         return id;
@@ -83,27 +95,46 @@ public class Task {
         return new Task(this.id, this.taskName, this.sortOrder, finished, this.addedDate, this.frequency, this.tag);
     }
 
-    public void updateRecurrence() {
+    public void updateRecurrence(LocalDateTime currentDateTime) {
         //Todays date in the string format
         //Can call this to update currOccurDate and nextOccurDate?
         //We will set if the task is unfinished, curroccurdate just rolls over to the next day, while we will calculate the next supposed occurdate and e
         //Set that to nextOccurdate
-        LocalDateTime currentDateTime = LocalDateTime.now();
+        //LocalDateTime currentDateTime = LocalDateTime.now().plusDays();
         LocalDateTime previousDateTime = currentDateTime.minusDays(1);
 
         LocalDate currentDate = LocalDate.now();
         String originalDate = this.addedDate;
         String prevDateString = dateToString(previousDateTime);
-        int originalDayOfWeek = (int)(originalDate.charAt(0));
+        int originalDayOfWeek = Character.getNumericValue(originalDate.charAt(0));
 
         //This is for the case when we are not supposed to calculate the new occurence date, but we need to
         //Account for the rollover to new date if the task is unfinished
-        if (!prevDateString.equals(this.nextOccurDate)) { //If its the same, then we know its time to update
+        //Case #3
+        if (compareDateString(prevDateString, this.currOccurDate) ==-1) {
+            return;
+        }
+        if (prevDateString.equals(this.currOccurDate) && compareDateString(this.currOccurDate, this.nextOccurDate) == -1) {
+            this.currOccurDate = this.nextOccurDate;
+            this.finished = false;
+            return;
+        }
+        if (prevDateString.equals(this.currOccurDate) && compareDateString(this.currOccurDate, this.nextOccurDate) == -1 && this.finished) {
+            this.currOccurDate = this.nextOccurDate;
+            this.finished = false;
+            return;
+        }
+
+
+        if (!prevDateString.equals(this.nextOccurDate)) { //If its not the same there is no need to update nextOccurDate
             if (!this.finished) {
+                //this.currOccurDate = dateToString(currentDateTime);
                 this.currOccurDate = dateToString(currentDateTime);
             }
             return;
         }
+
+
         // Get the first day of the month
         LocalDate nextMonthDate = currentDate.plusMonths(1);
         LocalDate firstDayOfNextMonth = nextMonthDate.withDayOfMonth(1);
@@ -182,9 +213,8 @@ public class Task {
                 newYear = nextMonthDate.getYear();
             }
 
-            String newOccurDate = Integer.toString(originalDayOfWeek)
-                        + Integer.toString(newMonth) + Integer.toString(newDate) + Integer.toString(newYear);
-            this.nextOccurDate = newOccurDate;
+
+            this.nextOccurDate = intToString(originalDayOfWeek, newMonth, newDate, newYear);
 
         }
         else if (this.frequency == 1) {
@@ -197,23 +227,27 @@ public class Task {
         else if (this.frequency == 7) {
             //Weekly
             //LocalDate oneWeekLater = currentDate.plusWeeks(1);
-            LocalDateTime oneWeekLater = previousDateTime.plusWeeks(1);
-            int newWeekDay = oneWeekLater.getDayOfWeek().getValue();
-            int newMonth = oneWeekLater.getMonthValue();
-            int newDate = oneWeekLater.getDayOfMonth();
-            int newYear = oneWeekLater.getYear();
-            String newOccurDate = Integer.toString(newWeekDay)
-                    + Integer.toString(newMonth) + Integer.toString(newDate) + Integer.toString(newYear);
-            this.nextOccurDate = newOccurDate;
+            //LocalDateTime oneWeekLater = previousDateTime.plusWeeks(1);
+            LocalDateTime oneWeekLater = currentDateTime.plusWeeks(1);
+
+            this.nextOccurDate = dateToString(oneWeekLater);
+        }
+        else if (this.frequency == 365) {
+            //Yearly
+            //LocalDateTime oneYearLater = previousDateTime.plusYears(1);
+            LocalDateTime oneYearLater = currentDateTime.plusYears(1);
+
+            this.nextOccurDate = dateToString(oneYearLater);
         }
 
         //If the task is unfinished then the curroccurdate should just roll over, otherwise it is set to nextoccurdate
-        if (this.finished) {
+        if (this.finished) { //Case 1
             this.currOccurDate = this.nextOccurDate;
-            this.flipFinished();
+            this.finished = false;
         }
-        else {
+        else { //Case 2
             this.currOccurDate = dateToString(currentDateTime);
+            this.finished = false;
         }
     }
 
@@ -223,13 +257,18 @@ public class Task {
         //Can call this to update currOccurDate and nextOccurDate?
         //We will set if the task is unfinished, curroccurdate just rolls over to the next day, while we will calculate the next supposed occurdate and e
         //Set that to nextOccurdate
+        //SHOULD ONLY RUN ONCE WHEN THE TASK IS FIRST CREATED
+        if (this.nextOccurDate != null) {
+            return;
+        }
+
         LocalDateTime currentDateTime = LocalDateTime.now();
         LocalDateTime previousDateTime = currentDateTime.minusDays(1);
 
         LocalDate currentDate = LocalDate.now();
         String originalDate = this.addedDate;
         String prevDateString = dateToString(previousDateTime);
-        int originalDayOfWeek = (int)(originalDate.charAt(0));
+        int originalDayOfWeek = Character.getNumericValue(originalDate.charAt(0));
 
         // Get the first day of the month
         LocalDate nextMonthDate = currentDate.plusMonths(1);
@@ -283,8 +322,8 @@ public class Task {
                 newYear = nextMonthDate.getYear();
             }
 
-            String newOccurDate = Integer.toString(originalDayOfWeek)
-                    + Integer.toString(newMonth) + Integer.toString(newDate) + Integer.toString(newYear);
+            String newOccurDate = intToString(originalDayOfWeek, newMonth, newDate, newYear);
+
             this.nextOccurDate = newOccurDate;
 
         }
@@ -298,21 +337,30 @@ public class Task {
         }
         else if (this.frequency == 7) {
             //Weekly
-            LocalDate oneWeekLater = currentDate.plusWeeks(1);
+            LocalDateTime oneWeekLater = currentDateTime.plusWeeks(1);
             int newWeekDay = oneWeekLater.getDayOfWeek().getValue();
             int newMonth = oneWeekLater.getMonthValue();
             int newDate = oneWeekLater.getDayOfMonth();
             int newYear = oneWeekLater.getYear();
-            String newOccurDate = Integer.toString(newWeekDay)
-                    + Integer.toString(newMonth) + Integer.toString(newDate) + Integer.toString(newYear);
+//            String newOccurDate = Integer.toString(newWeekDay)
+//                    + Integer.toString(newMonth) + Integer.toString(newDate) + Integer.toString(newYear);
+            String newOccurDate = dateToString(oneWeekLater);
+            this.nextOccurDate = newOccurDate;
+        }
+        else if (this.frequency == 365) {
+            LocalDateTime oneYearLater = currentDateTime.plusYears(1);
+//            int newWeekDay = oneYearLater.getDayOfWeek().getValue();
+//            int newMonth = oneYearLater.getMonthValue();
+//            int newDate = oneYearLater.getDayOfMonth();
+//            int newYear = oneYearLater.getYear();
+//            String newOccurDate = Integer.toString(newWeekDay)
+//                    + Integer.toString(newMonth) + Integer.toString(newDate) + Integer.toString(newYear);
+            String newOccurDate = dateToString(oneYearLater);
             this.nextOccurDate = newOccurDate;
         }
 
     }
 
-    public void setCurrOccurDate(String dateString) {
-        this.currOccurDate = dateString;
-    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -380,7 +428,67 @@ public class Task {
         return Integer.toString(dayOfWeekValue) + monthStr + dayStr + Integer.toString(year);
 
     }
+    public String intToString(int dayOfWeekValue, int month, int  dayOfMonth, int year) {
+
+        int[] dateArray = new int[4];
+        dateArray[0] = dayOfWeekValue;
+        dateArray[1] = month;
+        dateArray[2] = dayOfMonth;
+        dateArray[3] = year;
+        String monthStr;
+        if (month < 10) {
+            monthStr = "0" + Integer.toString(month);
+        }
+        else {
+            monthStr = Integer.toString(month);
+        }
+        String dayStr;
+        if (dayOfMonth < 10) {
+            dayStr = "0" + Integer.toString(dayOfMonth);
+        }
+        else {
+            dayStr = Integer.toString(dayOfMonth);
+        }
+        return Integer.toString(dayOfWeekValue) + monthStr + dayStr + Integer.toString(year);
+
+    }
     public void setDate(String newDate){ this.currOccurDate = newDate;}
 
+    //Returns -1 if the first date < second date
+    //Returns 1 if the first date > second date
+    //Returns 0 if they are equal
+    public int compareDateString(String date1, String date2) {
+        int year1 = Integer.parseInt(date1.substring(5));
+        int year2 = Integer.parseInt(date2.substring(5));
+
+        int month1 = Integer.parseInt(date1.substring(3,5));
+        int month2 = Integer.parseInt(date2.substring(3,5));
+
+        int day1 = Integer.parseInt(date1.substring(1,3));
+        int day2 = Integer.parseInt(date2.substring(1,3));
+
+        if (year1 > year2) {
+            return 1;
+        }
+        else if (year1 < year2) {
+            return -1;
+        }
+        else if (month1 > month2) {
+            return 1;
+        }
+        else if (month1 < month2) {
+            return -1;
+        }
+        else if (day1 > day2) {
+            return 1;
+        }
+        else if (day1 < day2) {
+            return -1;
+        }
+        else {
+            return 0;
+        }
+
+    }
 
 }

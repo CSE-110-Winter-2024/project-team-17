@@ -47,6 +47,12 @@ public class RoomTaskRepository implements TaskRepository{
     }
 
     @Override
+    public void updateTask(int id, Task task) {
+        remove(id);
+        append(task);
+    }
+
+    @Override
     public void save(List<Task> flashcards) {
         var entities = flashcards.stream()
                 .map(TaskEntity::fromTask)

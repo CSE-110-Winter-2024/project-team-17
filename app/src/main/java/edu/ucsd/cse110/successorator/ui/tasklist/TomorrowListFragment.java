@@ -123,6 +123,8 @@ public class TomorrowListFragment extends  Fragment{
             for (int i = 0; i < newcards.size(); i++) {
                 //Extract the date from cards
                 String currDate = newcards.get(i).currOccurDate();
+//                if (newcards.get(i).frequency() != 0 && newcards.get(i).finished())
+//                    newcards.get(i).flipFinished();
                 if (tmrDate.compareTo(currDate) != 0 && newcards.get(i).frequency() != 1) {
                     newcards.set(i, null);
                 }
@@ -184,8 +186,11 @@ public class TomorrowListFragment extends  Fragment{
             List<Task> newcards = new ArrayList<Task>(cards);
 
             for (int i = 0; i < newcards.size(); i++) {
+
                 //Extract the date from cards
                 String currDate = newcards.get(i).currOccurDate();
+//                if (newcards.get(i).frequency() != 0 && newcards.get(i).finished())
+//                    newcards.get(i).flipFinished();
                 if (tmrDate.compareTo(currDate) != 0 && newcards.get(i).frequency() != 1) {
                     newcards.set(i, null);
                 }
@@ -297,24 +302,24 @@ public class TomorrowListFragment extends  Fragment{
                 if(now.getYear() != activityModel.getTime().getValue().getYear()) {
                     activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
                     activityModel.removeFinished();
-                    activityModel.updateRecurrence();
+                    activityModel.updateRecurrence(now);
                 }
                 if(now.getMonth() != activityModel.getTime().getValue().getMonth()) {
                     activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
                     activityModel.removeFinished();
-                    activityModel.updateRecurrence();
+                    activityModel.updateRecurrence(now);
                 }
                 if(now.getDayOfMonth() != activityModel.getTime().getValue().getDayOfMonth()){
                     activityModel.getTime().getValue();
                     activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
                     activityModel.removeFinished();
-                    activityModel.updateRecurrence();
+                    activityModel.updateRecurrence(now);
                     //TODO: Commented out the 2am restraint for simplicity
                     if(now.getDayOfMonth() != activityModel.getTime().getValue().getDayOfMonth()+1 &&
                             now.getHour() > 2) {
                         activityModel.timeSet(LocalDateTime.now());
                         activityModel.removeFinished();
-                        activityModel.updateRecurrence();
+                        activityModel.updateRecurrence(now);
                     }
                 }
 

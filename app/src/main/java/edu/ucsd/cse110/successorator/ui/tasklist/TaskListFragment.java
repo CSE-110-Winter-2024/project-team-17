@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import edu.ucsd.cse110.successorator.MainViewModel;
@@ -101,7 +102,7 @@ public class TaskListFragment extends  Fragment{
 
             //Determine the current date as a string
 
-            LocalDateTime currentDateTime = LocalDateTime.now();
+            LocalDateTime currentDateTime = LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt());
             int year = currentDateTime.getYear();
             int month = currentDateTime.getMonthValue(); // Month value is 1-based
             int dayOfMonth = currentDateTime.getDayOfMonth();
@@ -137,14 +138,19 @@ public class TaskListFragment extends  Fragment{
             List<Task> newcards = new ArrayList<Task>(cards);
             for (int i = 0; i < newcards.size(); i++) {
                 //Extract the date from cards
+                //Update the cards
+
+                //newcards.get(i).updateRecurrence(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
+
                 String currDate = newcards.get(i).currOccurDate();
-                if (nowDate.compareTo(currDate) != 0) {
-                    newcards.remove(i);
+                if (nowDate.compareTo(currDate) != 0 && newcards.get(i).frequency() != 1) {
+                    newcards.set(i, null);
                 }
             }
+            newcards.removeIf(Objects::isNull);
 
             adapter.clear();
-            adapter.addAll(new ArrayList<>(cards)); // remember the mutable copy here!
+            adapter.addAll(new ArrayList<>(newcards)); // remember the mutable copy here!
 
 
 
@@ -261,25 +267,25 @@ public class TaskListFragment extends  Fragment{
                 if(now.getYear() != activityModel.getTime().getValue().getYear()) {
 
                     activityModel.timeSet(LocalDateTime.now());
-                    activityModel.updateRecurrence();
+                    //activityModel.updateRecurrence(now);
                     //activityModel.removeFinished();
                 }
                 if(now.getMonth() != activityModel.getTime().getValue().getMonth()) {
                     activityModel.timeSet(LocalDateTime.now());
-                    activityModel.updateRecurrence();
+                    //activityModel.updateRecurrence(now);
 
                     activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
                     //activityModel.removeFinished();
                 }
                 if(now.getMonth() != activityModel.getTime().getValue().getMonth()) {
                     activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
-                    activityModel.updateRecurrence();
+                    //activityModel.updateRecurrence(now);
                     //activityModel.removeFinished();
                 }
                 if(now.getDayOfMonth() != activityModel.getTime().getValue().getDayOfMonth()){
                     activityModel.getTime().getValue();
                     activityModel.timeSet(LocalDateTime.now().plusDays(activityModel.getTimeAdvCnt()));
-                    activityModel.updateRecurrence();
+                    //activityModel.updateRecurrence(now);
                     //activityModel.removeFinished();
                     //activityModel.removeFinished();
 
@@ -289,7 +295,7 @@ public class TaskListFragment extends  Fragment{
                         activityModel.timeSet(LocalDateTime.now());
                         activityModel.removeFinished();
                     }*/
-                    activityModel.updateRecurrence();
+                    //activityModel.updateRecurrence(now);
 
                 }
 

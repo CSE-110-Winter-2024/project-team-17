@@ -124,27 +124,52 @@ public class MainViewModel extends ViewModel {
 
     public void deleteFinished() {
         var tasks = this.orderedCards.getValue();
+        List<Task> taskList = new ArrayList<>();
         if(tasks == null){
             return;
         }
         for(int i = tasks.size()-1; i>= 0; i--){
             if(tasks.get(i).finished()) {
-                delete(tasks.get(i));
+                if (tasks.get(i).frequency() != 0) {
+
+                    tasks.get(i).updateRecurrence(LocalDateTime.now().plusDays(this.timeAdvCnt));
+                    //taskList.add(tasks.get(i));
+                    //taskRepository.updateTask(tasks.get(i).id(),tasks.get(i));
+//                    taskRepository.remove(tasks.get(i).id());
+//                    taskRepository.add(tasks.get(i));
+                    //System.out.println(tasks.get(i).currOccurDate());
+                }
+                else {
+                    delete(tasks.get(i));
+                }
+
+            }
+            else {
+                tasks.get(i).updateRecurrence(LocalDateTime.now().plusDays(this.timeAdvCnt));
+                //taskRepository.updateTask(tasks.get(i).id(),tasks.get(i));
+                //taskList.add(tasks.get(i));
+
+//                taskRepository.remove(tasks.get(i).id());
+//                taskRepository.add(tasks.get(i));
+                //System.out.println(tasks.get(i).currOccurDate());
             }
         }
+
+
+        taskRepository.save(tasks);
     }
 
 
-    public void updateRecurrence() {
+    public void updateRecurrence(LocalDateTime now) {
         var tasks = this.orderedCards.getValue();
         if(tasks == null) {
             return;
         }
         for (int i = 0; i <tasks.size(); i++) {
-            tasks.get(i).updateRecurrence();
+            tasks.get(i).updateRecurrence(now);
         }
         var newTasks = new ArrayList<>(tasks);
-        taskRepository.save(newTasks);
+        taskRepository.save(tasks);
     }
 
     public void delete(Task task){
@@ -174,6 +199,7 @@ public class MainViewModel extends ViewModel {
         //timeRepo.setDateTime(time.getValue().plusDays(timeOffset));
         timeAdvCnt++;
         deleteFinished();
+        //updateRecurrence(LocalDateTime.now().plusDays(this.timeAdvCnt));
     }
 
 

@@ -13,6 +13,7 @@ public interface TaskRepository {
     void save(Task task);
 
     void save(List<Task> tasks);
+    void updateTask(int id, Task task);
 
     void remove(int id);
 
