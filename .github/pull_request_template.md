@@ -46,6 +46,7 @@ is for a bug fix. You can check an item by replacing the [ ] with [x].
   - [ ] The code is follows formatting conventions (spacing, indents, etc).
   - [ ] The code makes use of names that sound like behavior.
   - [ ] The code is commented in hard-to-understand areas.
+          - For commenting: function: @parem, @result, and short line description of the func
   - [ ] The code contains changes to documentation if needed.
 
 - [ ] **The code is well structured.**
